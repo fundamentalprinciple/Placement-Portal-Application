@@ -3,4 +3,4 @@ from flask import current_app as app
 
 @app.route("/")
 def root():
-    return "Hi"
+    return render_template("index.html")
