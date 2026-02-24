@@ -32,7 +32,7 @@ def create_app():
 
         admin_user = User.query.filter_by(email='admin@admin.com').first()
         if not admin_user:
-            admin_user = User(email='admin@admin.com', password=hash_password(os.getenv('Admin')), active=True, fs_uniquifier='')
+            admin_user = User(email='admin@admin.com', password=hash_password(os.getenv('Admin')), active=True, fs_uniquifier=str(uuid.uuid4()) )
             db.session.add(admin_user)
             db.session.commit()
 

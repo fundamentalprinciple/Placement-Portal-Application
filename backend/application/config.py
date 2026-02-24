@@ -7,17 +7,12 @@ load_dotenv()
 class Config():
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
     SQLALCHEMY_DATABASE_URI = "sqlite:///"+os.path.join(SQLITE_DB_DIR, "testdb.sqlite3")
 
     SECRET_KEY = os.getenv('SECRET_KEY')
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
    
-    ''' 
-    REMEMBER_COOKIE_SAMESITE = 'strict'
-    SESSION_COOKIE_SAMESITE = 'strict'
-    '''
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
     SECURITY_TOKEN_AUTHENTICATION_KEY = "auth_token"
     SECURITY_TOKEN_MAX_AGE = 3600
