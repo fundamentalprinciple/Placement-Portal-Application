@@ -8,6 +8,7 @@ from application.database import db
 from flask_security import Security, SQLAlchemyUserDatastore, auth_required, hash_password
 from application.models import User, Role
 
+from flask_cors import CORS
 
 app = None
 
@@ -38,6 +39,7 @@ def create_app():
 
 
     app.app_context().push()
+    CORS(app, resources={r"/*": {"origins": "http://localhost:5173/*"}})
     return app
 
 app = create_app()
