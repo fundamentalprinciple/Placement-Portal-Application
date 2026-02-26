@@ -1,50 +1,47 @@
 import os
-
 from flask import Flask
+
 from application.config import Config
-
 from application.database import db
-
-from flask_security import Security, SQLAlchemyUserDatastore, auth_required, hash_password
-from application.models import User, Role
+from application.models import User
 
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+from flask_restful import Resource, Api
 
-app = None
+app,api = None,None
 
 def create_app():
     app = Flask(__name__)
+    api = Api(app)
+    bcrypt = Bcrypt(app)
     app.config.from_object(Config)
-    
     db.init_app(app)
-    
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
     
     with app.app_context():
         db.create_all()
 
     with app.app_context():
-        roles = ['admin', 'company', 'student']
-        for name in roles:
-            if not Role.query.filter_by(name=name).first():
-                db.session.add(Role(name=name))
-                db.session.commit()
-
         admin_user = User.query.filter_by(email='admin@admin.com').first()
         if not admin_user:
-            admin_user = User(email='admin@admin.com', password=hash_password(os.getenv('Admin')), active=True, fs_uniquifier=str(uuid.uuid4()) )
+            admin_user = User(username='admin',email='admin@admin.com', password=bcrypt.generate_password_hash(os.getenv('Admin')), role='admin')
             db.session.add(admin_user)
             db.session.commit()
 
 
     app.app_context().push()
     CORS(app, resources={r"/*": {"origins": "http://localhost:5173/*"}})
-    return app
+    return app,api
 
-app = create_app()
+app,api = create_app()
+
 
 from application.controllers import *
+from application.api import UserRegisteration, UserLogin, Secure
+
+api.add_resource(UserRegisteration, '/register', endpoint="register")
+api.add_resource(UserLogin, '/login', endpoint="login")
+api.add_resource(Secure, '/secure', endpoint="secure")
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=3000)
