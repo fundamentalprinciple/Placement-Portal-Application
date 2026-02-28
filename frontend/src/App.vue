@@ -1,12 +1,10 @@
-<script setup></script>
+<script setup>
+    import { ref, onMounted } from 'vue'
+    import Main from '@/components/Main.vue'
+</script>
 
 <template>
-    <h1>Yo</h1> 
-<!--
-    <Nav />
-    <Body />
-    <Footer />    
--->
+    <Main />
 </template>
 
 <style scoped></style>
