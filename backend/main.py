@@ -1,51 +1,55 @@
 import os
-from flask import Flask
+from dotenv import load_dotenv, dotenv_values
+load_dotenv()
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+from flask_security import Security
+from flask_restful import Api
 
 from application.config import Config
 from application.database import db
-from application.models import User
-
-from flask_cors import CORS
-from flask_bcrypt import Bcrypt
-from flask_restful import Resource, Api
-
-app,api = None,None
+from application.user_datastore import user_datastore
 
 def create_app():
     app = Flask(__name__)
-    api = Api(app)
-    bcrypt = Bcrypt(app)
     app.config.from_object(Config)
+
     db.init_app(app)
-    
+    Security(app, user_datastore)
+
+    api = Api(app)
+    return app, api
+
+def init_db(app):
     with app.app_context():
         db.create_all()
 
-    with app.app_context():
-        admin_user = User.query.filter_by(email='admin@admin.com').first()
+        admin_role = user_datastore.find_or_create_role(name='admin', description='Administrator role')
+        student_role = user_datastore.find_or_create_role(name='student', description='Student role')
+        company_role = user_datastore.find_or_create_role(name="company", description="Company role")
+
+        admin_user = user_datastore.find_user(username='admin')
         if not admin_user:
-            admin_user = User(username='admin',email='admin@admin.com', password=bcrypt.generate_password_hash(os.getenv('Admin')), role='admin')
-            db.session.add(admin_user)
-            db.session.commit()
+            user_datastore.create_user(
+                username='admin',
+                email = 'admin@admin.com',
+                password = os.getenv('Admin'),
+                roles=[admin_role]
+            )
 
+        db.session.commit()
 
-    app.app_context().push()
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173/*"}})
-    return app,api
+app, api = create_app()
+CORS(app) 
 
-app,api = create_app()
+from application.auth_api import LoginUser, LogoutUser, RegisterUser
+api.add_resource(LoginUser, '/api/login')
+api.add_resource(LogoutUser, '/api/logout')
+api.add_resource(RegisterUser, '/api/register')
 
-
-from application.controllers import *
-from application.api import UserRegisteration, UserLogin, Secure
-
-api.add_resource(UserRegisteration, '/register', endpoint="register")
-api.add_resource(UserLogin, '/login', endpoint="login")
-api.add_resource(Secure, '/secure', endpoint="secure")
-
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=3000)
-
-
-
+if __name__ == '__main__':
+    init_db(app) 
+    app.run(debug = True, host="127.0.0.1", port=3000)
 
