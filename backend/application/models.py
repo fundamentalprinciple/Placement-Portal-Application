@@ -1,5 +1,6 @@
 from .database import db
 from flask_security import UserMixin, RoleMixin
+from sqlalchemy import Enum
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,13 +14,46 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Roles', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
 
+
 class Roles(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.String(255), nullable=True)
+
 
 class UserRoles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
 
+
+class PlacementDrive(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey("company.id"), nullable=False)
+    job_title = db.Column(db.String(150), nullable=False)
+    job_description = db.Column(db.String(255), nullable=False)
+    eligibility_criteria = db.Column(db.String(255), nullable=False) #csv format (branch, cgpa, year)
+    deadline = db.Column(db.Date, nullable=False)
+    status = db.Column(Enum('approved','pending','closed'), nullable=False)
+
+    company = db.relationship("Company", backref="placement_drives")
+
+
+class Application(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    drive_id = db.Column(db.Integer, db.ForeignKey("placement_drive.id"), nullable=False)
+    application_date = db.Column(db.Date, nullable=False)
+    status = db.Column(Enum('applied','shortlisted','selected','rejected'), nullable=False)
+    
+    student = db.relationship("User", backref="applications")
+    drive  = db.relationship("PlacementDrive", backref="applications")
+
+
+class Company(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True) #doesnt get added until admin registers them
+    name = name = db.Column(db.String(150), unique=True, nullable=False)
+    hr_contact = db.Column(db.Text, nullable=False) #email
+    website = db.Column(db.Text, nullable=False) 
+    approval_status = db.Column(Enum('approved','pending','rejected'), nullable=False)

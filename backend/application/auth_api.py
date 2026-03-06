@@ -114,7 +114,7 @@ class RegisterUser(Resource):
       
         user_role = user_datastore.find_role(role)
         
-        if user_role == 'admin' or not(user_role):
+        if user_role == 'admin' or user_role == 'company' or not(user_role):
             result = {
                 'message': 'Invalid role for register.'
             }
@@ -144,7 +144,6 @@ class RegisterUser(Resource):
             jsonify(result),
             201
         )
-
 
 class LogoutUser(Resource):
     @auth_token_required
