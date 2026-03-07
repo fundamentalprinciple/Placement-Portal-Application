@@ -1,9 +1,11 @@
 <script setup>
     import { ref, onMounted } from 'vue'
-    import Main from '@/components/Main.vue'
+    import Nav from '@/components/layout/Nav.vue'
+    import Main from '@/components/layout/Main.vue'
 </script>
 
 <template>
+    <Nav /> 
     <Main />
 </template>
 

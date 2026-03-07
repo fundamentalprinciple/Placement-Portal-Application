@@ -1,8 +1,9 @@
 <script setup>
     import { ref, computed } from 'vue'
 
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     const route = useRoute()
+    const router = useRouter()
     const isRegister = computed(()=> route.path === "/register")
 
     const username = ref("")
@@ -24,8 +25,11 @@
 
         })
         const data = await resp.json()
-        const token = data.authorization_token
-        alert(token)
+        const token = data.access_token
+        localStorage.setItem("JWT",token)
+        alert("Successfully logged in.")
+        clearForm()
+        router.push('/')
     }
 
     async function register() {
@@ -46,7 +50,19 @@
                             })
         })
         alert("Successfully registered.")
+        clearForm()
+        router.push('/')
     }
+
+    function clearForm() {
+        username.value = ''
+        email.value = ''
+        password1.value = ''
+        password2.value = ''
+        role.value = ''
+        return
+    }    
+
 </script>
 
 <template>
@@ -61,7 +77,6 @@
             <input id="email" type="email" v-model="email" v-if="isRegister"/><br>
             <label for="role" v-if="isRegister">Role</label>
             <select id="role" v-model="role" v-if="isRegister">
-                <option value="admin">Admin</option>
                 <option value="company">Company</option>
                 <option value="student">Student</option>
             </select><br>

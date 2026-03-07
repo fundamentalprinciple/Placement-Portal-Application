@@ -1,9 +1,11 @@
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
-import Auth from '../components/Auth.vue'
-import About from '../components/About.vue'
+import Auth from '@/features/auth/Auth.vue'
+import About from '@/features/about/About.vue'
+import Dashboard from '@/features/dashboard/Dashboard.vue'
 
 const routes = [
+    { path: '/', component: Dashboard },
     { path: '/login', component: Auth },
     { path: '/register', component: Auth },
     { path: '/about', component: About },
@@ -11,7 +13,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes,
 })
 
