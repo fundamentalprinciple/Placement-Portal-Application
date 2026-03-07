@@ -4,6 +4,7 @@ from flask_security import utils, auth_token_required
 
 from .database import db
 from .user_datastore import user_datastore
+from .models import *
 
 class LoginUser(Resource):
     def post(self):
@@ -30,6 +31,13 @@ class LoginUser(Resource):
                 jsonify({'message': 'User not found.'}),
                 404
             )
+
+        if not user.active:
+            return make_response(
+                jsonify({'message': 'Account inactive, await Admin approval.'}),
+                403
+            )
+                
         
         if not utils.verify_password(password, user.password):
             return make_response(
@@ -114,7 +122,7 @@ class RegisterUser(Resource):
       
         user_role = user_datastore.find_role(role)
         
-        if user_role == 'admin' or user_role == 'company' or not(user_role):
+        if user_role == 'admin' or not(user_role):
             result = {
                 'message': 'Invalid role for register.'
             }
@@ -123,27 +131,67 @@ class RegisterUser(Resource):
                 jsonify(result),
                 400
             )
+        
+        if user_role == 'student':
+            user_datastore.create_user(
+                username=username,
+                email=email,
+                password=password,
+                roles = [user_role]
+            )
 
-        user_datastore.create_user(
-            username=username,
-            email=email,
-            password=password,
-            roles = [user_role]
-        )
+            db.session.commit()
 
-        db.session.commit()
-
-        result = {
-            'message': 'User registered successfully.',
-            'user': {
-                'username': username,
-                'email': email
+            result = {
+                'message': 'User registered successfully.',
+                'user': {
+                    'username': username,
+                    'email': email
+                }
             }
-        }
-        return make_response(
-            jsonify(result),
-            201
-        )
+            return make_response(
+                jsonify(result),
+                201
+            )
+        elif user_role == 'company':
+            if not user_cred.get('hr_contact') or not user_cred.get('website'):
+                result = {
+                    'message': 'hr_contact and website are required for applying a company registertion.'
+                }
+
+                return make_response(
+                    jsonify(result),
+                    400
+                ) 
+
+            user_datastore.create_user(
+                username=username,
+                email=email,
+                password=password,
+                roles = [user_role]
+            )
+            db.session.commit()
+
+            new_user = user_datastore.find_user(username=username)
+            user_datastore.deactivate_user(new_user)
+            db.session.commit()
+
+            new_company = Company(user_id=new_user.id, name=new_user.username, hr_contact=user_cred['hr_contact'] , website=user_cred['website'] , approval_status="pending")
+            db.session.add(new_company)
+            db.session.commit()
+
+            result = {
+                'message': 'Application for company registeration successful, awaiting an admin review.',
+                'user': {
+                    'username': username,
+                    'email': email
+                }
+            }
+        
+            return make_response(
+                jsonify(result),
+                201                                                                      )
+    
 
 class LogoutUser(Resource):
     @auth_token_required
