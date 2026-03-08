@@ -1,10 +1,35 @@
+import datetime
+
 from flask_restful import Resource
 from flask import request, jsonify, make_response
-from flask_security import utils, auth_token_required, roles_required
+from flask_security import current_user, utils, auth_token_required, roles_required
 
 from .user_datastore import user_datastore
 from .database import db
 from .models import *
+
+#Multiple access
+class Drives(Resource):
+
+    @auth_token_required
+    def get(self):
+        drives = PlacementDrive.query.all()
+        DriveList = []
+        for drive in drives:
+            if drive.status != "approved":
+                continue
+            DriveList.append({
+                'id': drive.id,
+                'company_id': drive.company_id,
+                'job_title': drive.job_title,
+                'job_description': drive.job_description,
+                'eligibility_criteria': drive.eligibility_criteria,
+                'deadline': drive.deadline
+            })
+        return make_response(
+            jsonify(DriveList),
+            200
+        )
 
 #Admin access
 class CompanyApplication(Resource):
@@ -34,6 +59,15 @@ class CompanyApplication(Resource):
         post_cred = request.get_json()
         comp_id = post_cred['id']
         new_status = post_cred['new_status']
+
+        if not (comp_id or new_status):
+            result = {
+                'message': "Fields id and new_status are required."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
 
         company = Company.query.get(comp_id)
 
@@ -80,155 +114,118 @@ class CompanyApplication(Resource):
             200
         )
 
+class ManageDrives(Resource):
+        
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+        drives = PlacementDrive.query.all()
+        DriveList = []
+        for drive in drives:
+            DriveList.append({
+                'id': drive.id,
+                'company_id': drive.company_id,
+                'job_title': drive.job_title,
+                'job_description': drive.job_description,
+                'eligibility_criteria': drive.eligibility_criteria,
+                'deadline': drive.deadline,
+                'status': drive.status
+            })
+        return make_response(
+            jsonify(DriveList),
+            200
+        )
+
+    @auth_token_required
+    @roles_required("admin")
+    def post(self):
+        post_cred = request.get_json()
+        drive_id = post_cred['id']
+        new_status = post_cred['new_status']
+
+        if not (drive_id or new_status):
+            result = {
+                'message': "Fields id and new_status are required."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+
+        drive = PlacementDrive.query.get(drive_id)
+
+        if not drive:
+            result = {
+                'message': f"No drive with id={drive_id} exists."
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+
+        if new_status not in ('approved','pending','rejected'):
+            result = {
+                'message': "Invalid status, valid values are 'approved','pending' and 'rejected'."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+
+        if drive.status == new_status:
+            result = {
+                'message': f"Company approval status is already set to {new_status}."
+            }
+            return make_response(
+                jsonify(result),
+                200
+            )
+
+        drive.status = new_status
+        db.session.commit()
+        result = {
+            'message': f'Company status set to {new_status}.'
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+         
+
 #Company access
+
+class CreateDrive(Resource):
+    
+    @auth_token_required
+    @roles_required("company")
+    def post(self):
+        post_cred = request.get_json()
+
+        if not(post_cred['job_title'] or post_cred['job_description'] or post_cred['eligibility_criteria'] or post_cred['deadline']):
+            result = {
+                'message': "Fields job_title, job_description, eligibility_criteria and deadline are required."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+        d = post_cred['deadline'].split('-')
+        Drive = PlacementDrive(company_id=current_user.id, job_title=post_cred['job_title'], job_description=post_cred['job_description'], eligibility_criteria=post_cred['eligibility_criteria'], deadline=datetime.datetime(int(d[0]),int(d[1]),int(d[2])), status="pending") 
+        db.session.add(Drive)
+        db.session.commit()
+        
+        result = {
+            'message': 'Drive created successfully.'
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+        
 
 #Student access
 
 
-#EXAMPLE API FOR REFERENCE
-'''
-class ProductResource(Resource):
-    #/api/product/<int: product_id>  :GET
-
-    def get(self, product_id):
-        #Read operation
-        product = Products.query.get(product_id)
-
-        if not product:
-            return make_response(
-                jsonify({'message': 'Product not found.'}),
-                404
-            )
-        
-        result = {
-            "message": "Product retrieved successfully.",
-            "product" : {
-                'id': product.id,
-                'name': product.name,
-                'description': product.description, 
-                'price': product.price,
-                'stock': product.stock
-            }
-        }
-
-        return make_response(
-            jsonify(result),
-            200
-        )
-    
-    #/api/product  :Post
-    def post(self):
-        prod_cred = request.get_json()
-
-        if not prod_cred or not prod_cred.get('name') or not prod_cred.get('price') or not prod_cred.get('stock'):
-            return make_response(
-                jsonify({'message': 'Product name, stock and price are required.'}),
-                400
-            )
-        
-        name = prod_cred['name']
-        price = prod_cred['price']
-        description = prod_cred.get('description', '')
-        stock = prod_cred.get('stock', 0)
-
-        # Data validation
-        if Products.query.filter_by(name=name).first():
-            return make_response(
-                jsonify({'message': 'Product with this name already exists.'}),
-                400
-            )
-        
-        new_product = Products(
-            name=name,
-            description=description,
-            price=price,
-            stock=stock
-        )  
-
-        db.session.add(new_product)
-        db.session.commit()
-
-        result = {
-            "message": "Product created successfully.",
-            "product": {
-                'id': new_product.id,
-                'name': new_product.name,
-                'description': new_product.description,
-                'price': new_product.price,
-                'stock': new_product.stock
-            }
-        }
-
-        return make_response(
-            jsonify(result),
-            201
-        )
-
-    #/api/product/<int: product_id>  :PUT
-    def put(self, product_id):
-        product =  Products.query.get(product_id)
-        if not product:
-            return make_response(
-                jsonify({'message': 'Product not found.'}),
-                404
-            )
-        
-        prod_cred = request.get_json()
-        if not prod_cred or not prod_cred.get('name') or not prod_cred.get('price') or not prod_cred.get('stock'):
-            return make_response(
-                jsonify({'message': 'Product name, stock and price are required.'}),
-                400
-            )
-        
-        name = prod_cred['name']
-        price = prod_cred['price']
-        description = prod_cred.get('description', '')
-        stock = prod_cred.get('stock', 0)
-
-        new_product = Products.query.filter_by(name=name).first()
-        if new_product and new_product.id != product_id:
-            return make_response(
-                jsonify({'message': 'Product with this name already exists.'}),
-                400
-            )
-        
-        product.name = name
-        product.description = description
-        product.price = price
-        product.stock = stock
 
 
-        db.session.commit()
-        result = {
-            "message": "Product updated successfully.",
-            "product": {
-                'id': product.id,
-                'name': product.name,
-                'description': product.description,
-                'price': product.price,
-                'stock': product.stock
-            }
-        }   
 
-        return make_response(
-            jsonify(result),
-            200
-        )
-    
-    #/api/product/<int: product_id>  :DELETE
-    def delete(self, product_id):
-        product = Products.query.get(product_id)
-        if not product:
-            return make_response(
-                jsonify({'message': 'Product not found.'}),
-                404
-            )
-        
-        db.session.delete(product)
-        db.session.commit()
-
-        return make_response(
-            jsonify({'message': 'Product deleted successfully.'}),
-            200
-        )
-'''

@@ -34,9 +34,7 @@
 #logout
     post on /api/logout
     
-    Set Headers: 1) Accept -> its filled by default
-                 2) User-Agent -> its filled by default
-                 3) Authentication-Token -> put your auth token here
+    Set Headers: Authentication-Token -> put your auth token here
 
 
     json body:
@@ -48,16 +46,13 @@
 #CompanyApplication
     get on /api/company-application
 
-    Set Headers: 1) Accept -> its filled by default
-                 2) User-Agent -> its filled by default
-                 3) Authentication-Token -> put your auth token here   
+    Set Headers: Authentication-Token -> put your auth token here
+
     (gets list of all companies from company model)
     
     post on /api/company-application
     
-    Set Headers: 1) Accept -> its filled by default
-                 2) User-Agent -> its filled by default
-                 3) Authentication-Token -> put your auth token here
+    Set Headers: Authentication-Token -> put your auth token here
 
     json_body:
     {
@@ -65,7 +60,14 @@
         "new_status": "",
     }
 
+#CreateDrive
+    post on /api/create-drive
 
+    Set Headers: 1) Accept -> its filled by default
+                 2) User-Agent -> its filled by default
+                 3) Authentication-Token -> put your auth token here
+
+     
 
 
 

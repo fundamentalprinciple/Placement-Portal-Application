@@ -45,7 +45,7 @@ app, api = create_app()
 CORS(app) 
 
 from application.auth_api import LoginUser, LogoutUser, RegisterUser
-from application.crud_api import CompanyApplication
+from application.crud_api import CompanyApplication, CreateDrive, Drives, ManageDrives
 
 #auth apis
 api.add_resource(RegisterUser, '/api/register')
@@ -53,22 +53,22 @@ api.add_resource(LoginUser, '/api/login')
 api.add_resource(LogoutUser, '/api/logout')
 
 #crud apis
+#Multiple access
+api.add_resource(Drives, '/api/drives')
+
 #Admin access
 api.add_resource(CompanyApplication,'/api/company-application')
-
-'''
-api.add_resource(ManageDrive,'/api/manage-drive')
+api.add_resource(ManageDrives,'/api/manage-drives')
 
 #Company access
 api.add_resource(CreateDrive,'/api/create-drive')
-api.add_resource(,)
-api.add_resource(,)
+#api.add_resource(,)
+#api.add_resource(,)
 
 #Student access
-api.add_resource(,)
-api.add_resource(,)
-api.add_resource(,)
-'''
+#api.add_resource(,)
+#api.add_resource(,)
+#api.add_resource(,)
 
 if __name__ == '__main__':
     init_db(app) 
