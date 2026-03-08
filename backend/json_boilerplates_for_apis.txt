@@ -45,3 +45,40 @@
         "password": ""
     }
 
+#CompanyApplication
+    get on /api/company-application
+
+    Set Headers: 1) Accept -> its filled by default
+                 2) User-Agent -> its filled by default
+                 3) Authentication-Token -> put your auth token here   
+    (gets list of all companies from company model)
+    
+    post on /api/company-application
+    
+    Set Headers: 1) Accept -> its filled by default
+                 2) User-Agent -> its filled by default
+                 3) Authentication-Token -> put your auth token here
+
+    json_body:
+    {
+        "id": "",
+        "new_status": "",
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

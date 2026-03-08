@@ -1,11 +1,88 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
-from flask_security import utils, auth_token_required
+from flask_security import utils, auth_token_required, roles_required
 
+from .user_datastore import user_datastore
 from .database import db
 from .models import *
 
+#Admin access
+class CompanyApplication(Resource):
+    
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+        companies = Company.query.all()
+        companyList = []
+        for comp in companies:
+            companyList.append({
+                'id': comp.id,
+                'user_id': comp.user_id,
+                'name': comp.name,
+                'hr_contact': comp.hr_contact,
+                'website': comp.website,
+                'approval_status': comp.approval_status
+            })
+        return make_response(
+            jsonify(companyList),
+            200
+        )
 
+    @auth_token_required
+    @roles_required("admin")
+    def post(self):
+        post_cred = request.get_json()
+        comp_id = post_cred['id']
+        new_status = post_cred['new_status']
+
+        company = Company.query.get(comp_id)
+
+        if not company:
+            result = {
+                'message': f"No company with id={comp_id} exists."
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+
+        user = User.query.get(company.user_id)
+        if new_status not in ('approved','pending','rejected'):
+            result = {
+                'message': "Invalid status, valid values are 'approved','pending' and 'rejected'."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+
+        if company.approval_status == new_status:
+            result = {
+                'message': f"Company approval status is already set to {new_status}."
+            }
+            return make_response(
+                jsonify(result),
+                200
+            )
+        
+        if new_status == 'approved':
+            user_datastore.activate_user(user)
+        else:
+            user_datastore.deactivate_user(user)
+
+        company.approval_status = new_status
+        db.session.commit()
+        result = {
+            'message': f'Company status set to {new_status}.'
+        }              
+        return make_response(
+            jsonify(result),
+            200
+        )
+
+#Company access
+
+#Student access
 
 
 #EXAMPLE API FOR REFERENCE
