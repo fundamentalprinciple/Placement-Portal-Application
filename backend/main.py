@@ -66,7 +66,7 @@ api.add_resource(CreateDrive,'/api/create-drive')
 #api.add_resource(,)
 
 #Student access
-#api.add_resource(,)
+#api.add_resource(Student,)
 #api.add_resource(,)
 #api.add_resource(,)
 

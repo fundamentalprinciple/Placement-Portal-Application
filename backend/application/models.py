@@ -57,3 +57,12 @@ class Company(db.Model):
     hr_contact = db.Column(db.Text, nullable=False) #email
     website = db.Column(db.Text, nullable=False) 
     approval_status = db.Column(Enum('approved','pending','rejected'), nullable=False)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    name = name = db.Column(db.String(150), nullable=False)
+    degree = db.Column(Enum('DS','CS','AI','ME','CE','EE','ECE','AE'), nullable=False)
+    cgpa = db.Column(db.Float, nullable=False)
+    year = db.Column(Enum('2021','2022','2023','2024','2025','2026'), nullable=False)
+
