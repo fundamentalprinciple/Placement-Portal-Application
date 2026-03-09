@@ -61,4 +61,58 @@ class SelfManageStudentProfile(Resource):
             200
         )
         
+class ApplyPlacementDrive(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        user_id = current_user.id
+        stu_id = Student.query.filter_by(user_id=user_id).first().id
+        applications = Application.query.filter_by(student_id=stu_id)
+        
+        appList=[]
+        for app in applications:
+            appList.append({
+                "drive_id": app.drive_id,
+                "company_name": Company.query.get(PlacementDrive.query.get(app.drive_id).company_id).name,
+                "job_title": PlacementDrive.query.get(app.drive_id).job_title,
+                "application_date": app.application_date,
+                "status": app.status
+            })
+        return make_response(
+            jsonify(appList),
+            200
+        )
+        
+    @auth_token_required
+    @roles_required("student")
+    def post(self):
+        post_cred = request.get_json()
+        drive_id = post_cred['drive_id']
+        drive = PlacementDrive.query.get(drive_id)
+        if not drive:
+            result = {
+                'message': f'No drive with id {drive_id}'
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+        student = Student.query.filter_by(user_id=current_user.id).first()
+        new_application = Application(student_id=student.id, drive_id=drive.id, application_date=datetime.datetime.now(), status="applied")
+        db.session.add(new_application)
+        db.session.commit()
+
+        result = {
+            'message': f'Application to drive {drive_id} made.'
+
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+                
+
+
+
 

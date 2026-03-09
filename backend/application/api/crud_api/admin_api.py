@@ -221,7 +221,7 @@ class ManageDrives(Resource):
 
         if drive.status == new_status:
             result = {
-                'message': f"Company approval status is already set to {new_status}."
+                'message': f"Drive approval status is already set to {new_status}."
             }
             return make_response(
                 jsonify(result),
@@ -231,7 +231,7 @@ class ManageDrives(Resource):
         drive.status = new_status
         db.session.commit()
         result = {
-            'message': f'Company status set to {new_status}.'
+            'message': f'Drive status set to {new_status}.'
         }
         return make_response(
             jsonify(result),

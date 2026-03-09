@@ -174,9 +174,9 @@ class RegisterUser(Resource):
                 201
             )
         elif user_role == 'company':
-            if not user_cred.get('hr_contact') or not user_cred.get('website'):
+            if not(user_cred['name'] or user_cred.get('hr_contact') or user_cred.get('website')):
                 result = {
-                    'message': 'hr_contact and website are required for applying a company registertion.'
+                    'message': 'name, hr_contact and website are required for applying a company registertion.'
                 }
 
                 return make_response(
@@ -196,7 +196,7 @@ class RegisterUser(Resource):
             user_datastore.deactivate_user(new_user)
             db.session.commit()
 
-            new_company = Company(user_id=new_user.id, name=new_user.username, hr_contact=user_cred['hr_contact'] , website=user_cred['website'] , approval_status="pending")
+            new_company = Company(user_id=new_user.id, name=user_cred['name'], hr_contact=user_cred['hr_contact'] , website=user_cred['website'] , approval_status="pending")
             db.session.add(new_company)
             db.session.commit()
 

@@ -73,7 +73,7 @@ api.add_resource(CreateDrive, '/api/create-drive')
 #Student access
 from application.api.crud_api.student_api import *
 api.add_resource(SelfManageStudentProfile, '/api/self-manage-student-profile')
-#api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
+api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
 #api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
 #api.add_resource(ViewApplicationStatus, '/api/view-application-status')
 
