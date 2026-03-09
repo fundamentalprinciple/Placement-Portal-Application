@@ -35,7 +35,7 @@ class PlacementDrive(db.Model):
     eligibility_criteria = db.Column(db.String(255), nullable=False) #csv format (branch, cgpa, year)
     deadline = db.Column(db.Date, nullable=False)
     status = db.Column(Enum('approved','pending','closed'), nullable=False)
-
+    
     company = db.relationship("Company", backref="placement_drives")
 
 
@@ -65,4 +65,16 @@ class Student(db.Model):
     degree = db.Column(Enum('DS','CS','AI','ME','CE','EE','ECE','AE'), nullable=False)
     cgpa = db.Column(db.Float, nullable=False)
     year = db.Column(Enum('2021','2022','2023','2024','2025','2026'), nullable=False)
+    available = db.Column(db.Boolean(), default=True)    
+
+class ScheduledInterview(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    company_message = db.Column(db.Text, nullable=True)
+
+class Recruitment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
 

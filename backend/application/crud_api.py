@@ -9,7 +9,7 @@ from .database import db
 from .models import *
 
 #Multiple access
-class Drives(Resource):
+class ViewApprovedDrives(Resource):
 
     @auth_token_required
     def get(self):
@@ -32,7 +32,7 @@ class Drives(Resource):
         )
 
 #Admin access
-class CompanyApplication(Resource):
+class ManageCompanyProfiles(Resource):
     
     @auth_token_required
     @roles_required("admin")
