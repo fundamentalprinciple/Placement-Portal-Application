@@ -44,32 +44,34 @@ def init_db(app):
 app, api = create_app()
 CORS(app) 
 
-from application.auth_api import LoginUser, LogoutUser, RegisterUser
-from application.crud_api import *
-
 #auth apis
+from application.api.auth_api import LoginUser, LogoutUser, RegisterUser
 api.add_resource(RegisterUser, '/api/register')
 api.add_resource(LoginUser, '/api/login')
 api.add_resource(LogoutUser, '/api/logout')
 
 #crud apis
-#Multiple access
+#Multiple roles access
+from application.api.crud_api.multiple_access_api import *
 api.add_resource(ViewApprovedDrives, '/api/view-approved-drives')
 api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
 
 #Admin access
+from application.api.crud_api.admin_api import *
 api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') #!!!!!!
 api.add_resource(ManageCompanyProfiles, '/api/manage-company-profiles')
 api.add_resource(ManageDrives, '/api/manage-drives')
 api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
 
 #Company access
+from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
 api.add_resource(ManageApplications, '/api/manage-applications')
 api.add_resource(ScheduleInterview, '/api/schedule-interview')
 api.add_resource(Recruit, '/api/recruit')
 
 #Student access
+from application.api.crud_api.student_api import *
 api.add_resource(SelfManageStudentProfile, '/api/self-manage-student-profile')
 api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
 api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')

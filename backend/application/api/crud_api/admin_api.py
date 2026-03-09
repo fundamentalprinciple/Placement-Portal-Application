@@ -4,36 +4,13 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from flask_security import current_user, utils, auth_token_required, roles_required
 
-from .user_datastore import user_datastore
-from .database import db
-from .models import *
+from ../../user_datastore import user_datastore
+from ../../database import db
+from ../../models import *
 
-#Multiple access
-class ViewApprovedDrives(Resource):
 
-    @auth_token_required
-    def get(self):
-        drives = PlacementDrive.query.all()
-        DriveList = []
-        for drive in drives:
-            if drive.status != "approved":
-                continue
-            DriveList.append({
-                'id': drive.id,
-                'company_id': drive.company_id,
-                'job_title': drive.job_title,
-                'job_description': drive.job_description,
-                'eligibility_criteria': drive.eligibility_criteria,
-                'deadline': drive.deadline
-            })
-        return make_response(
-            jsonify(DriveList),
-            200
-        )
-
-#Admin access
 class ManageCompanyProfiles(Resource):
-    
+
     @auth_token_required
     @roles_required("admin")
     def get(self):
@@ -98,7 +75,7 @@ class ManageCompanyProfiles(Resource):
                 jsonify(result),
                 200
             )
-        
+
         if new_status == 'approved':
             user_datastore.activate_user(user)
         else:
@@ -108,14 +85,15 @@ class ManageCompanyProfiles(Resource):
         db.session.commit()
         result = {
             'message': f'Company status set to {new_status}.'
-        }              
+        }
         return make_response(
             jsonify(result),
             200
         )
 
+
 class ManageDrives(Resource):
-        
+
     @auth_token_required
     @roles_required("admin")
     def get(self):
@@ -190,42 +168,3 @@ class ManageDrives(Resource):
             jsonify(result),
             200
         )
-         
-
-#Company access
-
-class CreateDrive(Resource):
-    
-    @auth_token_required
-    @roles_required("company")
-    def post(self):
-        post_cred = request.get_json()
-
-        if not(post_cred['job_title'] or post_cred['job_description'] or post_cred['eligibility_criteria'] or post_cred['deadline']):
-            result = {
-                'message': "Fields job_title, job_description, eligibility_criteria and deadline are required."
-            }
-            return make_response(
-                jsonify(result),
-                400
-            )
-        d = post_cred['deadline'].split('-')
-        Drive = PlacementDrive(company_id=current_user.id, job_title=post_cred['job_title'], job_description=post_cred['job_description'], eligibility_criteria=post_cred['eligibility_criteria'], deadline=datetime.datetime(int(d[0]),int(d[1]),int(d[2])), status="pending") 
-        db.session.add(Drive)
-        db.session.commit()
-        
-        result = {
-            'message': 'Drive created successfully.'
-        }
-        return make_response(
-            jsonify(result),
-            200
-        )
-        
-
-#Student access
-
-
-
-
-
