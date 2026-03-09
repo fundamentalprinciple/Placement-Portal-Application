@@ -54,28 +54,28 @@ api.add_resource(LogoutUser, '/api/logout')
 #Multiple roles access
 from application.api.crud_api.multiple_access_api import *
 api.add_resource(ViewApprovedDrives, '/api/view-approved-drives')
-api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
+#api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
 
 #Admin access
 from application.api.crud_api.admin_api import *
 api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') #!!!!!!
 api.add_resource(ManageCompanyProfiles, '/api/manage-company-profiles')
 api.add_resource(ManageDrives, '/api/manage-drives')
-api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
+#api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
 
 #Company access
 from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
-api.add_resource(ManageApplications, '/api/manage-applications')
-api.add_resource(ScheduleInterview, '/api/schedule-interview')
-api.add_resource(Recruit, '/api/recruit')
+#api.add_resource(ManageApplications, '/api/manage-applications')
+#api.add_resource(ScheduleInterview, '/api/schedule-interview')
+#api.add_resource(Recruit, '/api/recruit')
 
 #Student access
 from application.api.crud_api.student_api import *
-api.add_resource(SelfManageStudentProfile, '/api/self-manage-student-profile')
-api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
-api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
-api.add_resource(ViewApplicationStatus, '/api/view-application-status')
+#api.add_resource(SelfManageStudentProfile, '/api/self-manage-student-profile')
+#api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
+#api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
+#api.add_resource(ViewApplicationStatus, '/api/view-application-status')
 
 if __name__ == '__main__':
     init_db(app) 

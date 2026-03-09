@@ -4,9 +4,78 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from flask_security import current_user, utils, auth_token_required, roles_required
 
-from ../../user_datastore import user_datastore
-from ../../database import db
-from ../../models import *
+from ...user_datastore import user_datastore
+from ...database import db
+from ...models import *
+
+class ManageStudentProfiles(Resource):
+    
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+        students = Student.query.all()
+        studentList = []
+        for stu in students:
+            studentList.append({
+                'id': stu.id,
+                'user_id': stu.user_id,
+                'name': stu.name,
+                'degree': stu.degree,
+                'cgpa': stu.cgpa,
+                'year': stu.year,
+                'available': stu.available
+            })
+        return make_response(
+            jsonify(studentList),
+            200
+        )
+    
+    @auth_token_required
+    @roles_required("admin")
+    def post(self):
+        post_cred = request.get_json()
+        if not(post_cred['id'] or post_cred['new_status']):
+            result = {
+                'message': "Fields id and new_status are required."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+        
+        student = Student.query.get(post_cred['id'])
+        
+        if not student:
+            result = {
+                'message': f"No student with the id exists."
+            }
+            return make_response(
+                jsonify(result),
+                404
+            ) 
+        
+        user = User.query.get(student.user_id) 
+        if post_cred['new_status'] not in ('activate','deactivate'):
+            result = {
+                'message': "Invalid status, valid values are 'activate','deactivate'."
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+        
+        if post_cred['new_status'] == 'activate':
+            user_datastore.activate_user(user)
+        else:
+            user_datastore.deactivate_user(user)
+        db.session.commit()
+        result = {
+            'message': f"Student account set to {post_cred['new_status']}d."
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
 
 
 class ManageCompanyProfiles(Resource):
