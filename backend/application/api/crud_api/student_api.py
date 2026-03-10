@@ -68,7 +68,7 @@ class ApplyPlacementDrive(Resource):
     def get(self): # A bug
         user_id = current_user.id
         stu_id = Student.query.filter_by(user_id=user_id).first().id
-        applications = Application.query.filter_by(student_id=stu_id)
+        applications = Application.query.filter_by(student_id=stu_id).all()
         
         appList=[]
         for app in applications:
@@ -113,6 +113,59 @@ class ApplyPlacementDrive(Resource):
         )
                 
 
+class ViewApplicationStatus(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        user_id = current_user.id
+        stu_id = Student.query.filter_by(user_id=user_id).first().id
+        applications = Application.query.filter_by(student_id=stu_id)
+
+        appList=[]
+        for app in applications:
+            appList.append({
+                "drive_id": app.drive_id,
+                "company_name": Company.query.get(PlacementDrive.query.get(app.drive_id).company_id).name,
+                "job_title": PlacementDrive.query.get(app.drive_id).job_title,
+                "application_date": app.application_date,
+                "status": app.status
+            })
+        return make_response(
+            jsonify(appList),
+            200
+        )
 
 
+class ManageInterviewRequest(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        student_id = Student.query.filter_by(user_id=current_user.id).first().id
+        interviews = ScheduledInterview.query.filter_by(student_id=student_id).all()
+        result = []
+        for interview in interviews:
+            result.append({
+                'id': interview.id,
+                'company_id': interview.company_id,
+                'company_message': interview.company_message
+            })
 
+        return make_response(
+            jsonify(result),
+            200
+        )
+
+
+    def post(self):
+        post_cred = request.get_json()
+        if not(post_cred['interview_id']):
+            result = {
+                'message': 'Specify an interview_id to accept request.'
+            }
+            return make_request(
+                jsonify(result),
+                404
+            )
+        

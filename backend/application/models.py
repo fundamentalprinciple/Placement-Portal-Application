@@ -70,11 +70,12 @@ class Student(db.Model):
 class ScheduledInterview(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
     company_message = db.Column(db.Text, nullable=True)
+    accepted = db.Column(db.Booelan(), default=False)
 
 class Recruitment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
-
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)

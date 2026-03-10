@@ -67,15 +67,15 @@ api.add_resource(ManageDrives, '/api/manage-drives')
 from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
 api.add_resource(ManageApplications, '/api/manage-applications')
-#api.add_resource(ScheduleInterview, '/api/schedule-interview')
+api.add_resource(ScheduleInterview, '/api/schedule-interview')
 #api.add_resource(Recruit, '/api/recruit')
 
 #Student access
 from application.api.crud_api.student_api import *
 api.add_resource(SelfManageStudentProfile, '/api/self-manage-student-profile')
 api.add_resource(ApplyPlacementDrive, '/api/apply-placement-drive')
-#api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
-#api.add_resource(ViewApplicationStatus, '/api/view-application-status')
+api.add_resource(ViewApplicationStatus, '/api/view-application-status')
+api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
 
 if __name__ == '__main__':
     init_db(app) 
