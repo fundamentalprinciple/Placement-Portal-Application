@@ -65,7 +65,7 @@ class ApplyPlacementDrive(Resource):
     
     @auth_token_required
     @roles_required("student")
-    def get(self):
+    def get(self): # A bug
         user_id = current_user.id
         stu_id = Student.query.filter_by(user_id=user_id).first().id
         applications = Application.query.filter_by(student_id=stu_id)

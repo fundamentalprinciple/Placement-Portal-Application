@@ -41,12 +41,12 @@ class PlacementDrive(db.Model):
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     drive_id = db.Column(db.Integer, db.ForeignKey("placement_drive.id"), nullable=False)
     application_date = db.Column(db.Date, nullable=False)
     status = db.Column(Enum('applied','shortlisted','selected','rejected'), nullable=False)
     
-    student = db.relationship("User", backref="applications")
+    student = db.relationship("Student", backref="applications")
     drive  = db.relationship("PlacementDrive", backref="applications")
 
 

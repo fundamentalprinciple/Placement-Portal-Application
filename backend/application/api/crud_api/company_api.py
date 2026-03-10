@@ -25,7 +25,7 @@ class CreateDrive(Resource):
                 400
             )
         d = post_cred['deadline'].split('-')
-        Drive = PlacementDrive(company_id=current_user.id, job_title=post_cred['job_title'], job_description=post_cred['job_description'], eligibility_criteria=post_cred['eligibility_criteria'], deadline=datetime.datetime(int(d[0]),int(d[1]),int(d[2])), status="pending")
+        Drive = PlacementDrive(company_id=Company.query.filter_by(user_id=current_user.id).first().id, job_title=post_cred['job_title'], job_description=post_cred['job_description'], eligibility_criteria=post_cred['eligibility_criteria'], deadline=datetime.datetime(int(d[0]),int(d[1]),int(d[2])), status="pending")
         db.session.add(Drive)
         db.session.commit()
 
@@ -34,5 +34,29 @@ class CreateDrive(Resource):
         }
         return make_response(
             jsonify(result),
+            200
+        )
+
+
+class ManageApplications(Resource):
+    
+    @auth_token_required
+    @roles_required("company")
+    def get(self):
+        user_id = current_user.id
+        company_id = Company.query.filter_by(user_id=user_id).first().id
+        applications = Application.query.filter_by(company_id=company_id)
+        
+        appList=[]
+        for app in applications:
+            appList.append({
+                "drive_id": app.drive_id,
+                "job_title": PlacementDrive.query.get(app.drive_id).job_title,
+                "student_name": Student.query.get(app.student_id).name,
+                "application_date": app.application_date,
+                "status": app.status
+            })
+        return make_response(
+            jsonify(appList),
             200
         )

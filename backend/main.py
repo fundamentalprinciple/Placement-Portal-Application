@@ -58,7 +58,7 @@ api.add_resource(ViewApprovedDrives, '/api/view-approved-drives')
 
 #Admin access
 from application.api.crud_api.admin_api import *
-api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') #!!!!!!
+api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') 
 api.add_resource(ManageCompanyProfiles, '/api/manage-company-profiles')
 api.add_resource(ManageDrives, '/api/manage-drives')
 #api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
@@ -66,7 +66,7 @@ api.add_resource(ManageDrives, '/api/manage-drives')
 #Company access
 from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
-#api.add_resource(ManageApplications, '/api/manage-applications')
+api.add_resource(ManageApplications, '/api/manage-applications')
 #api.add_resource(ScheduleInterview, '/api/schedule-interview')
 #api.add_resource(Recruit, '/api/recruit')
 
