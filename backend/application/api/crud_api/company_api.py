@@ -44,19 +44,22 @@ class ManageApplications(Resource):
     @roles_required("company")
     def get(self):
         user_id = current_user.id
-        company_id = Company.query.filter_by(user_id=user_id).first().id
-        applications = Application.query.filter_by(company_id=company_id)
-        
-        appList=[]
-        for app in applications:
-            appList.append({
-                "drive_id": app.drive_id,
-                "job_title": PlacementDrive.query.get(app.drive_id).job_title,
-                "student_name": Student.query.get(app.student_id).name,
-                "application_date": app.application_date,
-                "status": app.status
-            })
+        drives = PlacementDrive.query.filter_by(company_id=Company.query.filter_by(user_id=user_id).first().id)
+        applications = [] # a list of lists of applications
+        for drive in drives:
+            applications.append(Application.query.filter_by(drive_id=drive.id))
+
+        result = []
+        for appList in applications:
+            for app in appList:
+                result.append({
+                    "drive_id": app.drive_id,
+                    "job_title": PlacementDrive.query.get(app.drive_id).job_title,
+                    "student_name": Student.query.get(app.student_id).name,
+                    "application_date": app.application_date,
+                    "status": app.status
+                })
         return make_response(
-            jsonify(appList),
+            jsonify(result),
             200
         )
