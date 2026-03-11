@@ -160,7 +160,7 @@ class ManageInterviewRequest(Resource):
 
     def post(self):
         post_cred = request.get_json()
-        if not(post_cred['interview_id']):
+        if not(post_cred['interview_id'] or post_cred['accept']):
             result = {
                 'message': 'Specify an interview_id to accept request.'
             }
@@ -168,4 +168,33 @@ class ManageInterviewRequest(Resource):
                 jsonify(result),
                 404
             )
+        interview = ScheduledInterview.query.get(interview_id)
+        if post_cred['accept']==True:
+            interview.accepted = True
+            db.session.commit()
+            result = {
+                'message': f'Interview {interview_id} accepted.'
+            }
+            return make_response(
+                jsonify(result),
+                200
+            )
+        elif post_cred['accept']==False:
+            interview.accepted = False
+            db.session.commit()
+            result = {
+                'message': f'Interview {interview_id} rejected.'
+            }
+            return make_response(
+                jsonify(result),
+                200
+            )
+        else:
+            result = {
+                'message': f"Invalid value for the field 'accept', set it to either True or False."
+            }
+            return make_response(
+                jsonify(result),
+                403
+            )            
         

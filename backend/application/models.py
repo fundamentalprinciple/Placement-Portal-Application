@@ -79,3 +79,4 @@ class Recruitment(db.Model):
     drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
+    recruitment_date = db.Column(db.Date, nullable=False)

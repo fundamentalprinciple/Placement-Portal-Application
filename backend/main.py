@@ -68,7 +68,7 @@ from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
 api.add_resource(ManageApplications, '/api/manage-applications')
 api.add_resource(ScheduleInterview, '/api/schedule-interview')
-#api.add_resource(Recruit, '/api/recruit')
+api.add_resource(Recruit, '/api/recruit')
 
 #Student access
 from application.api.crud_api.student_api import *
