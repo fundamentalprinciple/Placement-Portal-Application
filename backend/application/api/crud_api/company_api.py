@@ -185,7 +185,8 @@ class Recruit(Resource):
                 'drive_id': rec.drive_id,
                 'job_title': PlacementDrive.query.get(rec.drive_id).first().job_title,
                 'student_id': rec.student_id,
-                'student_name': Student.query.get(rec.student_id).first().name 
+                'student_name': Student.query.get(rec.student_id).first().name,
+                'annual_salary': rec.annual_salary
             })
         return make_response(
             jsonify(recList),
@@ -199,9 +200,10 @@ class Recruit(Resource):
         company_id = Company.query.filter_by(user_id=current_user.id).first().id
         student_id = post_cred['student_id']
         drive_id = post_cred['drive_id']
-        if not(student_id or drive_id):
+        annual_salary = post_cred['annual_salary']
+        if not(student_id or drive_id or annual_salary):
             result = {
-                'message': 'Fields student_id and drive_id are required.'
+                'message': 'Fields student_id, drive_id and annual_salary are required.'
             }
             return make_response(
                 jsonify(result),
@@ -229,7 +231,7 @@ class Recruit(Resource):
                 403
             )
 
-        new_recruitment = Recruitment(drive_id=drive_id, student_id=student_id, company_id=company_id, recruitment_date=datetime.datetime.now())
+        new_recruitment = Recruitment(drive_id=drive_id, student_id=student_id, company_id=company_id, recruitment_date=datetime.datetime.now(), annual_salary=annual_salary)
         db.session.add(new_recruitment)
         student.available = False
         db.session.commit()

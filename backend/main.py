@@ -54,14 +54,14 @@ api.add_resource(LogoutUser, '/api/logout')
 #Multiple roles access
 from application.api.crud_api.multiple_access_api import *
 api.add_resource(ViewApprovedDrives, '/api/view-approved-drives')
-#api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
+api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
 
 #Admin access
 from application.api.crud_api.admin_api import *
 api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') 
 api.add_resource(ManageCompanyProfiles, '/api/manage-company-profiles')
 api.add_resource(ManageDrives, '/api/manage-drives')
-#api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
+api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
 
 #Company access
 from application.api.crud_api.company_api import *

@@ -29,3 +29,21 @@ class ViewApprovedDrives(Resource):
             jsonify(DriveList),
             200
         )
+
+class ViewPlacementHistory(Resource):
+
+    @auth_token_required
+    def get(self):
+        placements = Recruitment.query.all()
+        placementList = []
+        for rec in placements:
+            placementList.append({
+                'recruitment_date': rec.recruitment_date,
+                'job_title': PlacementDrive.query.get(rec.drive_id).first().job_title,
+                'student_name': Student.query.get(rec.student_id).first().name,
+                'annual_salary': rec.annual_salary
+            })
+        return make_response(
+            jsonify(placementList),
+            200
+        )

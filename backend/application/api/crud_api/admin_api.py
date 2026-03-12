@@ -237,3 +237,41 @@ class ManageDrives(Resource):
             jsonify(result),
             200
         )
+
+import statistics
+class ViewPlacementStatistics(Resource):
+    
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+        placement_rate = (Recruitment.query.count() / Student.query.filter_by(available=True).all().count())*100 
+
+        total_salary = 0
+        salaryList = []
+        for rec in Recruitment.query:
+            total_salary+=rec.annual_salary
+            salaryList.append(rec.annual_salary)
+        avg_salary = total_salary / Recruitment.query.count()
+        
+        salaryList.sort() 
+        median_salary = statistics.median(salaryList)
+
+        highest_salary = max(salaryList)
+        lowest_salary = min(salaryList)
+        
+        #will see to these later
+        #salary_distribution_histogram = 
+        #department_wise_placement_piechart = 
+        #gender_wise_placement_piechart =
+        
+        result = {
+            'placement_rate': placement_rate,
+            'avg_salary': avg_salary,
+            'median_salary': median_salary,
+            'highest_salary': highest_salary,
+            'lowest_salary': lowest_salary
+        }
+        return make_response(
+            jsonify(result),
+            200
+        ) 

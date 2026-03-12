@@ -61,11 +61,38 @@ class Company(db.Model):
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
-    name = name = db.Column(db.String(150), nullable=False)
-    degree = db.Column(Enum('DS','CS','AI','ME','CE','EE','ECE','AE'), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    gender = db.Column(Enum('M','F'), nullable=False) 
+    degree = db.Column(db.ForeignKey('department.id'), nullable=False)
     cgpa = db.Column(db.Float, nullable=False)
     year = db.Column(Enum('2021','2022','2023','2024','2025','2026'), nullable=False)
     available = db.Column(db.Boolean(), default=True)    
+
+class Department(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+
+def seed_departments():
+    departments = [
+        Department(name="Computer Engineering"),
+        Department(name="Computer Science Engineering"),
+        Department(name="Electrical Engineering"),
+        Department(name="Mechanical Engineering"),
+        Department(name="Civil Engineering"),
+        Department(name="Chemical Engineering"),
+        Department(name="Aerospace Engineering"),
+        Department(name="Automotive Engineering"),
+        Department(name="Robotics Engineering"),
+        Department(name="Nanotechnology Engineering"),
+        Department(name="Data Science and Appications"),
+        Department(name="Electronic Systems"),
+        Department(name='Management and Data Science')
+    ]
+    for dept in departments:
+        existing = Department.query.filter_by(id=dept.id).first()
+        if not existing:
+            db.session.add(dept)
+    db.session.commit()    
 
 class ScheduledInterview(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,3 +107,5 @@ class Recruitment(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
     recruitment_date = db.Column(db.Date, nullable=False)
+    annual_salary = db.Column(db.Numeric(10,2), nullable=False) #In rupees, like 2200000.00
+
