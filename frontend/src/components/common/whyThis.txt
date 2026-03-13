@@ -1,1 +1,0 @@
-small reusable components like buttons and stuff should go here

@@ -99,7 +99,7 @@ class ScheduledInterview(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
     company_message = db.Column(db.Text, nullable=True)
-    accepted = db.Column(db.Booelan(), default=False)
+    accepted = db.Column(db.Boolean(), default=False)
 
 class Recruitment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

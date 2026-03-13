@@ -1,20 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Auth from '@/features/auth/Auth.vue'
-import About from '@/features/about/About.vue'
-import Dashboard from '@/features/dashboard/Dashboard.vue'
-
-const routes = [
-    { path: '/', component: Dashboard },
-    { path: '/login', component: Auth },
-    { path: '/register', component: Auth },
-    { path: '/about', component: About },
-
-]
+import MainLayout from '@/layouts/MainLayout.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', component: MainLayout },
+    { path: '/login', component: MainLayout },
+    { path: '/register-student', component: MainLayout },
+    { path: '/register-company', component: MainLayout },
+    { path: '/about', component: MainLayout }
+    ]
 })
 
 export default router

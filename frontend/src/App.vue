@@ -1,12 +1,12 @@
 <script setup>
-    import { ref, onMounted } from 'vue'
-    import Nav from '@/components/layout/Nav.vue'
-    import Main from '@/components/layout/Main.vue'
+    import Navbar from '@/components/Navbar.vue'
 </script>
 
 <template>
-    <Nav /> 
-    <Main />
+    <Navbar />
+    <main>
+        <RouterView /> 
+    </main>
 </template>
 
 <style scoped></style>
