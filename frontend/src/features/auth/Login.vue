@@ -23,7 +23,7 @@
             <br />
             <button type="submit">Submit</button>
             <br />
-            <p>If you don't have an account, register a <RouterLink to="/register-student">Student</RouterLink> or <RouterLink to="/register-companyh">Company</RouterLink></p>
+            <p>If you don't have an account, register as a <RouterLink to="/register-student">Student</RouterLink> or <RouterLink to="/register-companyh">Company</RouterLink></p>
         </fieldset>
     </form>
 </template>

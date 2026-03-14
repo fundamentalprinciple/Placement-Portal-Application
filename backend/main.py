@@ -11,6 +11,7 @@ from flask_restful import Api
 from application.config import Config
 from application.database import db
 from application.user_datastore import user_datastore
+from application.models import seed_departments
 
 def create_app():
     app = Flask(__name__)
@@ -20,7 +21,11 @@ def create_app():
     Security(app, user_datastore)
 
     api = Api(app)
+    
+    app.app_context().push()
     return app, api
+app, api = create_app()
+CORS(app) 
 
 def init_db(app):
     with app.app_context():
@@ -38,11 +43,9 @@ def init_db(app):
                 password = os.getenv('Admin'),
                 roles=[admin_role]
             )
-
         db.session.commit()
-
-app, api = create_app()
-CORS(app) 
+        seed_departments()
+    return
 
 #auth apis
 from application.api.auth_api import LoginUser, LogoutUser, RegisterUser

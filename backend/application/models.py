@@ -62,7 +62,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     name = db.Column(db.String(150), nullable=False)
-    gender = db.Column(Enum('M','F'), nullable=False) 
+    gender = db.Column(Enum('Male','Female','Trans'), nullable=False) 
     degree = db.Column(db.ForeignKey('department.id'), nullable=False)
     cgpa = db.Column(db.Float, nullable=False)
     year = db.Column(Enum('2021','2022','2023','2024','2025','2026'), nullable=False)
@@ -84,7 +84,7 @@ def seed_departments():
         Department(name="Automotive Engineering"),
         Department(name="Robotics Engineering"),
         Department(name="Nanotechnology Engineering"),
-        Department(name="Data Science and Appications"),
+        Department(name="Data Science and Applications"),
         Department(name="Electronic Systems"),
         Department(name='Management and Data Science')
     ]
@@ -93,6 +93,8 @@ def seed_departments():
         if not existing:
             db.session.add(dept)
     db.session.commit()    
+    return
+
 
 class ScheduledInterview(db.Model):
     id = db.Column(db.Integer, primary_key=True)

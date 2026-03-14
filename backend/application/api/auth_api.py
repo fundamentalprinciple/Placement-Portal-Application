@@ -133,17 +133,9 @@ class RegisterUser(Resource):
             )
         
         if user_role == 'student':
-            if not (user_cred['name'] or user_cred['degree'] or user_cred['cgpa'] or user_cred['year']):
+            if not (user_cred['name'] or user_cred['gender'] or user_cred['degree'] or user_cred['cgpa'] or user_cred['year']):
                 result = {
-                    'message': "Fields name, degree, cgpa and year are required."
-                }
-                return make_response(
-                    jsonify(result),
-                    400
-                )
-            if not (user_cred['degree'] in ['DS','CS','AI','ME','CE','EE','ECE','AE']) or not (user_cred['year'] in ['2021','2022','2023','2024','2025','2026']) or not (user_cred['cgpa']>0 or user_cred['cgpa']<=10):
-                result = {
-                    'message': "For eligibility, degree must be either in: 'DS','CS','AI','ME','CE','EE','ECE','AE'. And CGPA must be in range [0,10]. And year must be 2021 to 2026."
+                    'message': "Fields name, gender, degree, cgpa and year are required."
                 }
                 return make_response(
                     jsonify(result),
@@ -158,7 +150,7 @@ class RegisterUser(Resource):
 
             db.session.commit()
             student = user_datastore.find_user(username=username)
-            new_student = Student(user_id=student.id, name=user_cred['name'],degree=user_cred['degree'],cgpa=user_cred['cgpa'],year=user_cred['year'])
+            new_student = Student(user_id=student.id, name=user_cred['name'], gender=user_cred['gender'], degree=user_cred['degree'],cgpa=user_cred['cgpa'],year=user_cred['year'])
             db.session.add(new_student)
             db.session.commit()
 
