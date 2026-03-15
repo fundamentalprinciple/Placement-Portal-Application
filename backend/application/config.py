@@ -12,4 +12,5 @@ class Config():
 
     SECRET_KEY = os.getenv('SECRET_KEY')
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
-
+    
+    

@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
-from flask_security import utils, auth_token_required
+from flask_security import utils, auth_token_required, hash_password
 
 from ..database import db
 from ..user_datastore import user_datastore
@@ -69,7 +69,6 @@ class RegisterUser(Resource):
     def post(self):
          
         user_cred = request.get_json()
-        print(user_cred)
     
         # Data validation
         if not user_cred or not user_cred.get('username') or not user_cred.get('email') or not user_cred.get('password') or not user_cred.get('role'):
@@ -144,7 +143,7 @@ class RegisterUser(Resource):
             user_datastore.create_user(
                 username=username,
                 email=email,
-                password=password,
+                password=hash_password(password),
                 roles = [user_role]
             )
 
@@ -179,7 +178,7 @@ class RegisterUser(Resource):
             user_datastore.create_user(
                 username=username,
                 email=email,
-                password=password,
+                password=hash_password(password),
                 roles = [user_role]
             )
             db.session.commit()

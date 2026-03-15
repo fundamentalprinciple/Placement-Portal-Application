@@ -1,13 +1,15 @@
 <script setup>
     import { ref } from 'vue';
-    //import  { router } from 'vue-router';   
+    import  { useRouter } from 'vue-router';   
+
+    const router = useRouter()
 
     const name = ref("")
     const username = ref("")
     const gender = ref("")
     const email = ref("")
     const degree = ref("")
-    const cgpa = ref("")
+    const cgpa = ref(5)
     const year = ref("")
     const password1 = ref("")
     const password2 = ref("")
@@ -37,14 +39,15 @@
             })
         });
         const data = await response.json();
-        alert(`Account registered successfully, you can login now, your username is ${data['username']}`);
-        this.$router.push("/login");
+        router.push("/login");
+        document.getElementById("form").reset();
+        alert(`Account registered successfully, you can login now, your username: ${data['user']['username']}.`);
     }
 
 </script>
 
 <template>
-    <form @submit.prevent="register()">
+    <form id="form" @submit.prevent="register()">
         <fieldset>
             <legend>Student Register</legend>
             <label for="name">Name</label>
