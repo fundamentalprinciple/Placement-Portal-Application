@@ -8,7 +8,6 @@
     const password = ref("")
 
     async function login() {
-        alert("login function called")
         const response = await fetch('http://localhost:3000/api/login', {
             method: "POST",
             headers: {
@@ -22,8 +21,8 @@
         
         const data  = await response.json();
         localStorage.setItem("Authentication-Token", data['auth_token']);
+        localStorage.setItem("username", username.value);
         router.push("/");
-        alert('You logged in successfully!');
     }
 
 
@@ -33,18 +32,97 @@
     <form @submit.prevent="login()">
         <fieldset>
             <legend>Login</legend>
-            <label for="username">Username</label>
-            <input v-model="username" id="username" name="username" type="text" required />
-            <br />
-            <label for="password">Password</label>
-            <input v-model="password" id="password" name="password" type="password" required />
-            <br />
+            <div class="group">
+                <label for="username">Username</label><br>
+                <input v-model="username" id="username" name="username" type="text" required />
+            </div>
+            
+            <div class="group">
+                <label for="password">Password</label><br>
+                <input v-model="password" id="password" name="password" type="password" required />
+            </div>            
+
             <button type="submit">Submit</button>
             <br />
-            <p>If you don't have an account, register as a <RouterLink to="/register-student">Student</RouterLink> or <RouterLink to="/register-company">Company</RouterLink></p>
+            <p>If you don't have an account, register as a <RouterLink class="link" to="/register-student">Student</RouterLink> or <RouterLink class="link" to="/register-company">Company</RouterLink></p>
         </fieldset>
     </form>
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+    form {
+        border: none;
+        border-radius: 20px;
+        padding: 30px;
+        min-width: 400px;
+        width: 400px;
+        margin: auto;
+        margin-top: 10vh;
+        margin-bottom: 10vh;
+        background-color: #773344;
+    }
+
+    legend, label, p {
+        color: white;
+    }
+
+    legend {
+        font-family: "Bebar Neue", sans-serif;
+    }  
+
+    label, p {
+        font-family: "Montserrat", sans-serif;
+    }  
+
+    fieldset {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+        padding: 10px; 
+        height: 35px;
+        width: 300px;
+        border: none;
+        border-radius: 10px;
+    }
+
+    button {
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        height: 40px;
+        width: 100px;
+        margin: auto;
+    }    
+
+    button:hover {
+        background-color: #E3D888;
+    }
+    
+   .link {
+        text-decoration: none;
+        color: #40E0D0;
+    }
+
+    .link:hover {
+        color: #E3D888;
+    } 
+
+    .group {
+        margin: 20px auto 20px auto;
+    }
+    
+    legend {
+        padding-left: 40%;
+    }
+
+    p {
+        text-align: center;
+        margin: auto;
+    }
+
 </style>

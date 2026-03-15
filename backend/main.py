@@ -48,10 +48,11 @@ def init_db(app):
     return
 
 #auth apis
-from application.api.auth_api import LoginUser, LogoutUser, RegisterUser
+from application.api.auth_api import LoginUser, LogoutUser, RegisterUser, Authenticate
 api.add_resource(RegisterUser, '/api/register')
 api.add_resource(LoginUser, '/api/login')
 api.add_resource(LogoutUser, '/api/logout')
+api.add_resource(Authenticate, '/api/authenticate')
 
 #crud apis
 #Multiple roles access

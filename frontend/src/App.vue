@@ -1,5 +1,6 @@
 <script setup>
     import Navbar from '@/components/Navbar.vue'
+    
 </script>
 
 <template>
@@ -9,4 +10,5 @@
     </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>

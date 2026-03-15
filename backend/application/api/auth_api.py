@@ -6,6 +6,44 @@ from ..database import db
 from ..user_datastore import user_datastore
 from ..models import *
 
+class Authenticate(Resource):
+    def post(self):
+        post_cred = request.get_json()
+        if not( post_cred['token'] or post_cred['username']):
+            result = {
+                'message': 'username and token fieldd are required'
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+        user = user_datastore.find_user(username=username)
+        
+        if not user:
+            result = {
+                'message': "User doesn't exist"
+            }
+            return make_response(
+                jsonify(result),
+                400
+            )
+        name = None
+        if user.roles[0] == "admin":
+            name = "admin"
+        elif user.roles[0] == "student":
+            name = Student.query.filter_by(user_id=user.id).first().name
+        elif user.roles[0] == "company":
+            name = Company.query.filter_by(user_id=user.id).first().name
+
+        result = {
+            'role': user.roles[0],
+            'name': name 
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+
 class LoginUser(Resource):
     def post(self):
 
