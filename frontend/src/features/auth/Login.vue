@@ -8,6 +8,12 @@
     const password = ref("")
 
     async function login() {
+
+        if(localStorage.getItem("Authentication-Token") && localStorage.setItem("username")) {
+            localStorage.removeItem("Authentication-Token")
+            localStorage.removeItem("username")
+        }
+
         const response = await fetch('http://localhost:3000/api/login', {
             method: "POST",
             headers: {

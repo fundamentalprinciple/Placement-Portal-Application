@@ -19,6 +19,12 @@
             alert("Passwords do not match!")
             return
         }
+
+        if(localStorage.getItem("Authentication-Token") && localStorage.setItem("username")) {
+            localStorage.removeItem("Authentication-Token")
+            localStorage.removeItem("username")
+        }
+
         const response = await fetch("http://localhost:3000/api/register", {
             method: "POST",
             headers: {

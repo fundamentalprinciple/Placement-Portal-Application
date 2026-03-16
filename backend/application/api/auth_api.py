@@ -7,17 +7,18 @@ from ..user_datastore import user_datastore
 from ..models import *
 
 class Authenticate(Resource):
+    @auth_token_required
     def post(self):
         post_cred = request.get_json()
-        if not( post_cred['token'] or post_cred['username']):
+        if not(post_cred['username']):
             result = {
-                'message': 'username and token fieldd are required'
+                'message': 'username required'
             }
             return make_response(
                 jsonify(result),
                 404
             )
-        user = user_datastore.find_user(username=username)
+        user = user_datastore.find_user(username=post_cred['username'])
         
         if not user:
             result = {
@@ -28,15 +29,15 @@ class Authenticate(Resource):
                 400
             )
         name = None
-        if user.roles[0] == "admin":
+        if user.roles[0].name == "admin":
             name = "admin"
-        elif user.roles[0] == "student":
+        elif user.roles[0].name == "student":
             name = Student.query.filter_by(user_id=user.id).first().name
-        elif user.roles[0] == "company":
+        elif user.roles[0].name == "company":
             name = Company.query.filter_by(user_id=user.id).first().name
 
         result = {
-            'role': user.roles[0],
+            'role': user.roles[0].name,
             'name': name 
         }
         return make_response(

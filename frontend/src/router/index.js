@@ -9,6 +9,7 @@ const router = createRouter({
     { path: '/login', component: MainLayout },
     { path: '/register-student', component: MainLayout },
     { path: '/register-company', component: MainLayout },
+    { path: '/logout', component: MainLayout },
     { path: '/about', component: MainLayout }
     ]
 })

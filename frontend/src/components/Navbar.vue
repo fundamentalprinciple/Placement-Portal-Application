@@ -1,4 +1,11 @@
 <script setup>
+    import { ref } from 'vue'
+
+    const authenticated = ref(false)
+    if (localStorage.getItem('Authentication-Token') && localStorage.getItem('username')) {
+        authenticated.value = true;
+    }
+
 </script>
 
 <template>
@@ -8,7 +15,7 @@
             <p>Placement Portal</p>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <span style="height: 20px; width: 20px; margin-bottom: 10px;" class="navbar-toggler-icon"></span>
     </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -18,7 +25,9 @@
                 </li>
                 
                 <li class="nav-item">
-                    <RouterLink class="link" to="/login">Login</RouterLink>
+                    <RouterLink v-if="authenticated==false" class="link" to="/login">Login</RouterLink>
+                    <RouterLink v-if="authenticated==true" class="link" to="/logout">Logout</RouterLink>
+
                 </li>
 
                 <li class="nav-item">
@@ -55,6 +64,11 @@
     .navbar-toggler {
         background-color: white;
         margin-right: 10%;
+        height: 30px;
+    }
+
+    .navbar-toggler:hover {
+        background-color: #E3D888;
     }
 
     .link {
