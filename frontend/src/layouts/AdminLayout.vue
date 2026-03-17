@@ -1,6 +1,7 @@
 <script setup>
     import Hello from '@/components/Hello.vue'
     import ManageStudentProfiles from '@/features/admin/ManageStudentProfiles.vue'
+    import ManageCompanyProfiles from '@/features/admin/ManageCompanyProfiles.vue'
 
 </script>
 
@@ -9,8 +10,8 @@
     <div class="controls">
         
         <ManageStudentProfiles />
-        <!--
         <ManageCompanyProfiles />
+        <!--
         <ManageDrives />
         <ViewPlacementStatistics />
         -->

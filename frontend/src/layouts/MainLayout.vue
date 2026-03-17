@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted, provide } from 'vue'
+    import { ref, inject} from 'vue'
     import { useRoute } from 'vue-router'
 
     import AuthLayout from '@/layouts/AuthLayout.vue'
@@ -8,52 +8,19 @@
     import StudentLayout from '@/layouts/StudentLayout.vue'
     import NotAuthenticated from '@/layouts/NotAuthenticated.vue'
 
-    const route = useRoute()       
-
-    const name = ref("")
-    const role = ref("")
-    const authenticated = ref(false)
-
-    async function authenticate() {
-        if (localStorage.getItem('username') && localStorage.getItem('Authentication-Token')) {
-            const username = localStorage.getItem('username')
-
-            const response = await fetch("http://localhost:3000/api/authenticate", {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authentication-Token": localStorage.getItem('Authentication-Token')
-                },
-                body: JSON.stringify({
-                    username: localStorage.getItem('username') 
-                })
-            })
-
-            const authData = await response.json()
-        
-            name.value = authData.name
-            role.value = authData.role
-            authenticated.value = true
-        }
-    }
-
-    onMounted(()=>{
-        authenticate()
-    })
-
-    provide("authenticated", authenticated)
-    provide("name", name)
-    provide("role", role)
+    const route = useRoute()   
+    const authenticated = inject('authenticated')
+    const role = inject('role')
 
 </script>
 
 <template>
-    <AuthLayout v-if="route.path == '/login' || route.path == '/register-student' || route.path=='/register-company' || route.path == '/logout'"/>
+    <AuthLayout v-if="['/login', '/register-student', '/register-company', '/logout'].includes(route.path)"/>
     
-    <AdminLayout v-else-if="role=='admin'" />
-    <CompanyLayout v-else-if="role=='company'" />
-    <StudentLayout v-else-if="role=='student'"  />
-    <NotAuthenticated v-else-if="authenticated==false" />
+    <AdminLayout v-else-if="authenticated && role=='admin'" />
+    <CompanyLayout v-else-if="authenticated && role=='company'" />
+    <StudentLayout v-else-if="authenticated && role=='student'"  />
+    <NotAuthenticated v-else />
 
 </template>
 

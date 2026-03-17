@@ -1,34 +1,55 @@
 <script setup>
-    import { ref } from "vue"
+    import { ref, inject } from "vue"
     import  { useRouter } from 'vue-router';   
  
     const router = useRouter()
+
+    const authenticated = inject('authenticated')
 
     const username = ref("")
     const password = ref("")
 
     async function login() {
+        try {
+            if (authenticated) {
+                localStorage.removeItem("Authentication-Token")
+                localStorage.removeItem("username")
+            }
 
-        if(localStorage.getItem("Authentication-Token") && localStorage.setItem("username")) {
-            localStorage.removeItem("Authentication-Token")
-            localStorage.removeItem("username")
-        }
+            if (!username.value || !password.value) {
+                alert("Username and password are required.");
+                return;
+            }
 
-        const response = await fetch('http://localhost:3000/api/login', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     username: username.value,
                     password: password.value
-            })    
-        });
-        
-        const data  = await response.json();
-        localStorage.setItem("Authentication-Token", data['auth_token']);
-        localStorage.setItem("username", username.value);
-        router.push("/");
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                alert(errorData.message || "Login failed. Please check your credentials or try again later.");
+                return;
+            }
+
+            const data = await response.json();
+            const token = data['auth_token']
+            if (!token) {
+                alert("Authentication token not received. Please try again.");
+                return;
+            }
+            localStorage.setItem("Authentication-Token", data['auth_token']);
+            localStorage.setItem("username", username.value);
+            router.push("/");
+        } catch (err) {
+            alert("An unexpected error occurred. Please try again.");
+        }
     }
 
 

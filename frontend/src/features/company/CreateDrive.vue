@@ -1,84 +1,60 @@
 <script setup>
     import { ref, inject } from 'vue';
-    import  { useRouter } from 'vue-router';   
 
-    const router = useRouter()
-    const authenticated = inject(authenticated)
+    const token = localStorage.getItem("Authentication-Token")
 
-    const name = ref("")
-    const username = ref("")
-    const gender = ref("")
-    const email = ref("")
-    const degree = ref("")
+    const job_title = ref("")
+    const job_description = ref("")
+    const deadline = ref("")
+
+    const degree = ref("") 
     const cgpa = ref(5)
     const year = ref("")
-    const password1 = ref("")
-    const password2 = ref("")
 
-    const role = "student";
 
-    async function register() {
-        if(password1.value!=password2.value) {
-            alert("Passwords do not match!")
-            return
-        }
-
-        if(authenticated) {
-            localStorage.removeItem("Authentication-Token")
-            localStorage.removeItem("username")
-        }
-
-        const response = await fetch("http://localhost:3000/api/register", {
+    async function createDrive() {
+        const response = await fetch("http://localhost:3000/api/create-drive", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authentication-Token": token
             },
             body: JSON.stringify({
-                name: name.value,
-                username: username.value,
-                gender: gender.value,
-                email: email.value,
-                role: role,
-                degree: degree.value,
-                cgpa: parseFloat(cgpa.value),
-                year: year.value,
-                password: password1.value
+                job_title: job_title.value,
+                job_description: job_description.value,
+                eligibility_criteria: `(${degree.value},${cgpa.value},${year.value}`,
+                deadline: deadline.value,
             })
         });
-        document.getElementById("form").reset();
-        router.push("/login");
+        //document.getElementById("form").reset();
+        alert(elgibility_criteria)
     }
-
+    
 </script>
 
 <template>
-    <form id="form" @submit.prevent="register()">
+    <form id="form" @submit.prevent="createDrive()">
         <fieldset>
-            <legend>Student Register</legend>
+            <legend>Create Drive</legend>
             <div class="group">
-                <label for="name">Name</label><br>
-                <input v-model="name" id="name" name="name" type="text" required />
+                <label for="job_title">Job Title</label><br>
+                <input v-model="job_title" id="job_title" name="job_title" type="text" required />
             </div>
 
             <div class="group">
-                <label for="gender">Gender</label><br>
-                <select v-model="gender" id="gender" name="gender" type="text" required >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Trans">Trans</option>
-                </select>
+                <label for="job_description">Job Description</label><br>
+                <textarea style="padding: 20px; height: 200px; width: 400px; border: 1px solid lightblue; border-radius: 20px;" v-model="job_description" id="job_description" name="job_description" type="text" required />
 
-            <div class="group">
-                <label for="username">Set a Username</label><br>
-                <input v-model="username" id="username" name="username" type="text" required />
             </div>
 
             <div class="group">
-                <label for="email">Email</label><br>
-                <input v-model="email" id="email" name="email" type="email" required />
+                <label for="deadline">Deadline</label>
+                <input style="width:150px; margin-left: 20px;" v-model="deadline" id="deadline" name="deadline" type="date" required />
             </div>
 
-            <div class="group">
+            <div class="criteria">
+                <p>Eligbility Criteria</p><br>
+
                 <label for="degree">Major</label><br>
                 <select style="width:250px" v-model="degree" id="degree" name="degree" required >
                     <option value="Computer Engineering">Computer Engineering</option>
@@ -95,16 +71,14 @@
                     <option value="Electronic Systems">Electronic Systems</option>
                     <option value="Management and Data Science">Management and Data Science</option>
                 </select>
-            </div>
-            
-            <div class="group">
-                <label for="cgpa">CGPA</label><br>
+                <br />
+                <br />
+                <label for="cgpa">Minimum CGPA</label><br>
                 <input style="width: 300px;" v-model="cgpa" id="cgpa" name="cgpa" type="range" min="0" max="10" step="0.01" oninput="valueDisplay.textContent = this.value"/>
-                <div style="font-size: x-large; color: white;" id="valueDisplay">5</div>
-            </div>
-
-            <div class="group">
-                <label for="year">Year of graduation</label></div>
+                <div style="font-size: x-large;" id="valueDisplay">5</div>
+                <br />
+                <br />
+                <label for="year">Minimum Year of graduation</label>
                 <select v-model="year" id="year" name="year" required >
                     <option value="2021">2021</option>
                     <option value="2022">2022</option>
@@ -114,44 +88,29 @@
                     <option value="2026">2026</option>
                 </select>
             </div>
-
-            <div class="group">
-                <label for="password1">Set Password</label><br>
-                <input v-model="password1" id="password1" name="password1" type="password" required />
-            </div>
-
-            <div class="group">
-                <label for="password2">Confirm Password</label><br>
-                <input v-model="password2" id="password2" name="password2" type="password" required />
-            </div>
-
             <button type="submit">Submit</button>
-            <p>If you already have an account, <RouterLink class="link" to="/login">login</RouterLink></p>
         </fieldset>
-    </form>
+    </form>    
 </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
     form {
-        border: none;
+        border: 1px solid lightblue;
         border-radius: 20px;
         padding: 30px;
         min-width: 500px;
         width: 550px;
         margin: auto;
-        margin-top: 10vh;
         margin-bottom: 10vh;
-        background-color: #773344;
-    }
-
-    legend, label, p {
-        color: white;
+        background-color: #ECEBFA;
+        box-shadow: 10px 10px 5px lightblue;
     }
 
     legend {
         font-family: "Bebas Neue", sans-serif;
+        font-size: xx-large;
     }
 
     label, p {
@@ -171,7 +130,7 @@
         border: none;
         border-radius: 10px;
     }
-    
+
     select {
         padding: 5px;
         width: 100px;
@@ -180,6 +139,7 @@
     button {
         border: none;
         border-radius: 10px;
+        background-color: lightblue;
         font-weight: bold;
         height: 40px;
         width: 100px;
@@ -202,6 +162,14 @@
 
     .group {
         margin: 20px auto 20px auto;
+    }
+
+    .criteria {
+        margin: 20px auto 20px auto;
+        border: 1px solid lightblue;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 5px 5px 5px lightblue;
     }
 
     legend {

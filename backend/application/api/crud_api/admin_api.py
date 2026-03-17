@@ -92,6 +92,7 @@ class ManageCompanyProfiles(Resource):
                 'user_id': comp.user_id,
                 'name': comp.name,
                 'hr_contact': comp.hr_contact,
+                'email': User.query.get(comp.user_id).email,
                 'website': comp.website,
                 'approval_status': comp.approval_status
             })

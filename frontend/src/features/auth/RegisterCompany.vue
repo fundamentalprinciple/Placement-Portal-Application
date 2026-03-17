@@ -1,8 +1,9 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref, inject } from 'vue';
     import  { useRouter } from 'vue-router';
 
     const router = useRouter()
+    const authenticated = inject('authenticated')
 
     const name = ref("")
     const hr_contact = ref("")
@@ -20,7 +21,7 @@
             return
         }
 
-        if(localStorage.getItem("Authentication-Token") && localStorage.setItem("username")) {
+        if(authenticated) {
             localStorage.removeItem("Authentication-Token")
             localStorage.removeItem("username")
         }
@@ -43,7 +44,7 @@
         const data = await response.json();
         router.push("/login");
         document.getElementById("form").reset();
-        alert(`Applied for registeration successfully, awaiting admin approval.}.`);
+        alert(`Applied for registeration successfully, awaiting admin approval.`);
     }
 
 </script>
@@ -113,7 +114,7 @@
     }
 
     legend {
-        font-family: "Bebar Neue", sans-serif;
+        font-family: "Bebas Neue", sans-serif;
     }
 
     label, p {

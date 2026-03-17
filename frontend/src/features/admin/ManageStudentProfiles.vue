@@ -78,6 +78,7 @@
         padding-top: 50px;
         padding-bottom: 50px;
         box-shadow: 10px 10px 5px lightblue;
+        margin-bottom: 50px;
     }
 
     .profile {

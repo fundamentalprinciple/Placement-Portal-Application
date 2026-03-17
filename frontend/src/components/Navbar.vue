@@ -1,10 +1,7 @@
 <script setup>
-    import { ref } from 'vue'
+    import { inject } from 'vue'
 
-    const authenticated = ref(false)
-    if (localStorage.getItem('Authentication-Token') && localStorage.getItem('username')) {
-        authenticated.value = true;
-    }
+    const authenticated = inject("authenticated")
 
 </script>
 
@@ -25,9 +22,8 @@
                 </li>
                 
                 <li class="nav-item">
-                    <RouterLink v-if="authenticated==false" class="link" to="/login">Login</RouterLink>
                     <RouterLink v-if="authenticated==true" class="link" to="/logout">Logout</RouterLink>
-
+                    <RouterLink v-else class="link" to="/login">Login</RouterLink>
                 </li>
 
                 <li class="nav-item">
