@@ -23,7 +23,8 @@ class ManageStudentProfiles(Resource):
                 'degree': stu.degree,
                 'cgpa': stu.cgpa,
                 'year': stu.year,
-                'available': stu.available
+                'available': stu.available,
+                'account_status': User.query.get(stu.user_id).active
             })
         return make_response(
             jsonify(studentList),
