@@ -174,6 +174,7 @@ class ManageDrives(Resource):
             DriveList.append({
                 'id': drive.id,
                 'company_id': drive.company_id,
+                'company_name': Company.query.get(drive.company_id).name,
                 'job_title': drive.job_title,
                 'job_description': drive.job_description,
                 'eligibility_criteria': drive.eligibility_criteria,
@@ -212,7 +213,7 @@ class ManageDrives(Resource):
                 404
             )
 
-        if new_status not in ('approved','pending','rejected'):
+        if new_status not in ('approved','pending','closed'):
             result = {
                 'message': "Invalid status, valid values are 'approved','pending' and 'rejected'."
             }

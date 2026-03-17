@@ -22,12 +22,11 @@
             body: JSON.stringify({
                 job_title: job_title.value,
                 job_description: job_description.value,
-                eligibility_criteria: `(${degree.value},${cgpa.value},${year.value}`,
+                eligibility_criteria: `["${degree.value}",${cgpa.value},${year.value}]`,
                 deadline: deadline.value,
             })
         });
-        //document.getElementById("form").reset();
-        alert(elgibility_criteria)
+        document.getElementById("form").reset();
     }
     
 </script>

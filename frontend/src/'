@@ -5,7 +5,6 @@
     const new_status = ref('approved')
 
     let driveList = ref([]);
-    let elgibility_criteria = ref([])
 
     async function getDrives() {
         const response = await fetch("http://localhost:3000/api/manage-drives", {
@@ -16,6 +15,7 @@
         })
 
         driveList.value = await response.json()
+        console.log(driveList.value[0].id)
     }
 
     getDrives()
@@ -43,15 +43,10 @@
             <h4>{{ drive.job_title }}</h4>
             <p style="color:green;" v-if="drive.status=='approved'"><strong>Approval Status:</strong>       Approved</p>
             <p style="color:blue;" v-if="drive.status=='pending'"><strong>Approval Status:</strong>       Pending</p>
-            <p style="color:red;" v-if="drive.status=='closed'"><strong>Approval Status:</strong>       Closed</p>
+            <p style="color:red;" v-if="drive.status=='rejected'"><strong>Approval Status:</strong>       Rejected</p>
             <p><strong>Job Description:</strong> <br>           {{ drive.job_description }}</p>
             <p><strong>Company:</strong>           {{ drive.company_name }}</p>
-
-            <p><strong>Eligibility Criteria:</strong></p>
-            <p>Major: <br>{{JSON.parse(drive.eligibility_criteria)[0]}}</p>
-            <p>Min. CGPA: <br>{{JSON.parse(drive.eligibility_criteria)[1]}}</p>
-            <p>Min. Year of Graduation: <br>{{JSON.parse(drive.eligibility_criteria)[2]}}</p>
-
+            <p><strong>Eligibility Criteria:</strong> <br>            {{ drive.eligibility_criteria }}</p>
             <p><strong>Deadline:</strong> <br>           {{ drive.deadline }}</p>
 
             <p><strong>Set Status:</strong></p>
@@ -59,7 +54,7 @@
                 <option value="approved">Approve</option>
                 <option value="closed">Close</option>
             </select>
-            <button @click="changeDriveStatus(drive.id,new_status)">Set</button>
+            <button @click="changeDriveStatus(drive.id,new_status.value)">Set</button>
 
         </div>
     </div>
