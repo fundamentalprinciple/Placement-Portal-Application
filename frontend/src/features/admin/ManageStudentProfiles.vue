@@ -1,7 +1,8 @@
 <script setup>
-    import { ref, inject } from 'vue'
+    import { ref } from 'vue'
+    import { useAuthStore } from '@/stores/auth'
 
-    const token = localStorage.getItem('Authentication-Token')
+    const auth = useAuthStore()
     
     let studentList = ref([]);
 
@@ -10,7 +11,7 @@
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authentication-Token": token 
+                "Authentication-Token": auth.token 
             },
         })
         
@@ -24,7 +25,7 @@
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
             body: JSON.stringify({
                 id: id,

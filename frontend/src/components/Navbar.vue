@@ -1,7 +1,7 @@
 <script setup>
-    import { inject } from 'vue'
+    import { useAuthStore } from '@/stores/auth'
 
-    const authenticated = inject("authenticated")
+    const auth = useAuthStore()
 
 </script>
 
@@ -22,7 +22,7 @@
                 </li>
                 
                 <li class="nav-item">
-                    <RouterLink v-if="authenticated==true" class="link" to="/logout">Logout</RouterLink>
+                    <RouterLink v-if="auth.isAuthenticated" class="link" to="/logout">Logout</RouterLink>
                     <RouterLink v-else class="link" to="/login">Login</RouterLink>
                 </li>
 

@@ -1,7 +1,8 @@
 <script setup>
-    import { ref, inject, onMounted } from 'vue'
+    import { ref, onMounted } from 'vue'
+    import { useAuthStore } from '@/stores/auth'
 
-    const token = localStorage.getItem('Authentication-Token')
+    const auth = useAuthStore()
 
     let driveList = ref([]);
     let elgibility_criteria = ref([])
@@ -10,7 +11,7 @@
         const response = await fetch("http://localhost:3000/api/create-drive", {
             method: "GET",
             headers: {
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
         })
 
@@ -24,7 +25,7 @@
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
             body: JSON.stringify({
                 id: id

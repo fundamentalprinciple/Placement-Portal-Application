@@ -1,26 +1,21 @@
 <script setup>
-    import { ref, inject } from "vue"
+    import { ref } from "vue"
+    import { useAuthStore } from '@/stores/auth'
     import  { useRouter } from 'vue-router';   
  
     const router = useRouter()
-
-    const authenticated = inject('authenticated')
 
     const username = ref("")
     const password = ref("")
 
     async function login() {
         try {
-            if (authenticated) {
-                localStorage.removeItem("Authentication-Token")
-                localStorage.removeItem("username")
-            }
 
             if (!username.value || !password.value) {
                 alert("Username and password are required.");
                 return;
             }
-
+            
             const response = await fetch('http://localhost:3000/api/login', {
                 method: "POST",
                 headers: {
@@ -44,8 +39,9 @@
                 alert("Authentication token not received. Please try again.");
                 return;
             }
-            localStorage.setItem("Authentication-Token", data['auth_token']);
-            localStorage.setItem("username", username.value);
+                const auth = useAuthStore()
+                auth.login({ token, username: username.value })
+                await auth.authenticate()
             router.push("/");
         } catch (err) {
             alert("An unexpected error occurred. Please try again.");

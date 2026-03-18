@@ -1,7 +1,8 @@
 <script setup>
-    import { ref, inject } from 'vue';
+    import { ref } from 'vue';
+    import { useAuthStore } from '@/stores/auth'
 
-    const token = localStorage.getItem("Authentication-Token")
+    const auth = useAuthStore()
 
     const job_title = ref("")
     const job_description = ref("")
@@ -17,7 +18,7 @@
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
             body: JSON.stringify({
                 job_title: job_title.value,

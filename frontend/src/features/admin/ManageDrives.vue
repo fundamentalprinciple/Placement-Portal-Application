@@ -1,7 +1,8 @@
 <script setup>
-    import { ref, inject } from 'vue'
+    import { ref } from 'vue'
+    import { useAuthStore } from '@/stores/auth'
 
-    const token = localStorage.getItem('Authentication-Token')
+    const auth = useAuthStore()
     const new_status = ref('approved')
 
     let driveList = ref([]);
@@ -11,7 +12,7 @@
         const response = await fetch("http://localhost:3000/api/manage-drives", {
             method: "GET",
             headers: {
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
         })
 
@@ -25,7 +26,7 @@
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authentication-Token": token
+                "Authentication-Token": auth.token
             },
             body: JSON.stringify({
                 id: id,

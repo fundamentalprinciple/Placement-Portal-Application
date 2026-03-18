@@ -1,5 +1,6 @@
 <script setup>
-    import { ref, inject} from 'vue'
+    import { ref } from 'vue'
+    import { useAuthStore } from '@/stores/auth'
     import { useRoute } from 'vue-router'
 
     import AuthLayout from '@/layouts/AuthLayout.vue'
@@ -9,17 +10,16 @@
     import NotAuthenticated from '@/layouts/NotAuthenticated.vue'
 
     const route = useRoute()   
-    const authenticated = inject('authenticated')
-    const role = inject('role')
+    const auth = useAuthStore()
 
 </script>
 
 <template>
     <AuthLayout v-if="['/login', '/register-student', '/register-company', '/logout'].includes(route.path)"/>
     
-    <AdminLayout v-else-if="authenticated && role=='admin'" />
-    <CompanyLayout v-else-if="authenticated && role=='company'" />
-    <StudentLayout v-else-if="authenticated && role=='student'"  />
+    <AdminLayout v-else-if="auth.isAuthenticated && auth.role=='admin'" />
+    <CompanyLayout v-else-if="auth.isAuthenticated && auth.role=='company'" />
+    <StudentLayout v-else-if="auth.isAuthenticated && auth.role=='student'"  />
     <NotAuthenticated v-else />
 
 </template>

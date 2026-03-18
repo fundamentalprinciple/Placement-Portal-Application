@@ -1,0 +1,84 @@
+src/
+│
+├── assets/
+│
+├── router/
+│   └── index.js
+│
+├── stores/                 # Pinia (if used)
+│   ├── authStore.js
+│   ├── adminStore.js
+│   ├── studentStore.js
+│   └── companyStore.js
+│
+├── services/               # API calls (Axios wrapper)
+│   ├── api.js
+│   ├── authService.js
+│   ├── adminService.js
+│   ├── companyService.js
+│   └── studentService.js
+│
+├── layouts/
+│   ├── AdminLayout.vue
+│   ├── CompanyLayout.vue
+│   ├── StudentLayout.vue
+│   └── AuthLayout.vue
+│
+├── components/             # Only reusable global components
+│   ├── base/
+│   │   ├── BaseButton.vue
+│   │   ├── BaseModal.vue
+│   │   ├── BaseTable.vue
+│   │   └── BaseLoader.vue
+│   │
+│   ├── Navbar.vue
+│   ├── Sidebar.vue
+│   └── Pagination.vue
+│
+├── features/
+│   ├── auth/
+│   │   ├── LoginPage.vue
+│   │   ├── RegisterStudent.vue
+│   │   └── RegisterCompany.vue
+│   │
+│   ├── admin/
+│   │   ├── AdminDashboard.vue
+│   │   ├── pages/
+│   │   │   ├── ManageCompanies.vue
+│   │   │   ├── ManageStudents.vue
+│   │   │   ├── ManageDrives.vue
+│   │   │   └── Reports.vue
+│   │   └── components/
+│   │       ├── CompanyApprovalCard.vue
+│   │       ├── StatsCard.vue
+│   │       └── SearchBar.vue
+│   │
+│   ├── company/
+│   │   ├── CompanyDashboard.vue
+│   │   ├── pages/
+│   │   │   ├── CreateDrive.vue
+│   │   │   ├── DriveList.vue
+│   │   │   └── Applications.vue
+│   │   └── components/
+│   │       ├── DriveForm.vue
+│   │       ├── ApplicantTable.vue
+│   │       └── StatusUpdater.vue
+│   │
+│   ├── student/
+│   │   ├── StudentDashboard.vue
+│   │   ├── pages/
+│   │   │   ├── DriveList.vue
+│   │   │   ├── MyApplications.vue
+│   │   │   └── Profile.vue
+│   │   └── components/
+│   │       ├── DriveCard.vue
+│   │       ├── ApplicationStatusBadge.vue
+│   │       └── ResumeUploader.vue
+│
+├── utils/
+│   ├── constants.js
+│   ├── validators.js
+│   └── helpers.js
+│
+├── App.vue
+└── main.js

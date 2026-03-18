@@ -1,9 +1,10 @@
 <script setup>
-    import { ref, inject } from 'vue';
+    import { ref } from 'vue';
     import  { useRouter } from 'vue-router';   
+    import { useAuthStore } from '@/stores/auth'
 
     const router = useRouter()
-    const authenticated = inject(authenticated)
+    const auth = useAuthStore()
 
     const name = ref("")
     const username = ref("")
@@ -23,9 +24,8 @@
             return
         }
 
-        if(authenticated) {
-            localStorage.removeItem("Authentication-Token")
-            localStorage.removeItem("username")
+        if(auth.isAuthenticated) {
+            auth.logout()
         }
 
         const response = await fetch("http://localhost:3000/api/register", {
