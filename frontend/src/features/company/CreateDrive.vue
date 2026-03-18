@@ -1,8 +1,10 @@
 <script setup>
     import { ref } from 'vue';
     import { useAuthStore } from '@/stores/auth'
+    import { useDriveStore } from '@/stores/drives'
 
     const auth = useAuthStore()
+    const driveStore = useDriveStore()
 
     const job_title = ref("")
     const job_description = ref("")
@@ -12,23 +14,17 @@
     const cgpa = ref(5)
     const year = ref("")
 
-
     async function createDrive() {
-        const response = await fetch("http://localhost:3000/api/create-drive", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": auth.token
-            },
-            body: JSON.stringify({
-                job_title: job_title.value,
-                job_description: job_description.value,
-                eligibility_criteria: `["${degree.value}",${cgpa.value},${year.value}]`,
-                deadline: deadline.value,
-            })
-        });
-        document.getElementById("form").reset();
+        await driveStore.createDrive({
+            job_title: job_title.value,
+            job_description: job_description.value,
+            eligibility_criteria: `["${degree.value}",${cgpa.value},${year.value}]`,
+            deadline: deadline.value,
+        })
+        document.getElementById('form').reset()
+        await driveStore.fetchDrivesByCompany()
     }
+    
     
 </script>
 
@@ -100,10 +96,8 @@
         border: 1px solid lightblue;
         border-radius: 20px;
         padding: 30px;
-        min-width: 500px;
         width: 550px;
-        margin: auto;
-        margin-bottom: 10vh;
+        height: 1100px;
         background-color: #ECEBFA;
         box-shadow: 10px 10px 5px lightblue;
     }

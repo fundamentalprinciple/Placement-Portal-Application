@@ -1,46 +1,32 @@
 <script setup>
-    import { ref } from 'vue'
+    import { ref, onMounted } from 'vue'
     import { useAuthStore } from '@/stores/auth'
+    import { useDriveStore } from '@/stores/drives'
 
     const auth = useAuthStore()
+    const driveStore = useDriveStore()
+
     const new_status = ref('approved')
 
-    let driveList = ref([]);
-    let elgibility_criteria = ref([])
+    let eligibility_criteria = ref([]);
 
-    async function getDrives() {
-        const response = await fetch("http://localhost:3000/api/manage-drives", {
-            method: "GET",
-            headers: {
-                "Authentication-Token": auth.token
-            },
-        })
 
-        driveList.value = await response.json()
+    onMounted(async() => {
+        await driveStore.fetchAllDrives()
+    })
+
+    async function changeStatus(id, status) {
+        await driveStore.changeDriveStatus(id, status);
+        await driveStore.fetchAllDrives()
     }
 
-    getDrives()
 
-    async function changeDriveStatus(id,changeStatus) {
-        const response = await fetch("http://localhost:3000/api/manage-drives", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": auth.token
-            },
-            body: JSON.stringify({
-                id: id,
-                new_status: changeStatus
-            })
-        })
-        await getDrives();
-    }
 </script>
 
 <template>
     <div class="container">
         <h2>Placement Drives</h2>
-        <div v-for="drive in driveList" class="profile">
+        <div v-for="drive in driveStore.drives" class="profile">
             <h4>{{ drive.job_title }}</h4>
             <p style="color:green;" v-if="drive.status=='approved'"><strong>Approval Status:</strong>       Approved</p>
             <p style="color:blue;" v-if="drive.status=='pending'"><strong>Approval Status:</strong>       Pending</p>
@@ -60,7 +46,7 @@
                 <option value="approved">Approve</option>
                 <option value="closed">Close</option>
             </select>
-            <button @click="changeDriveStatus(drive.id,new_status)">Set</button>
+            <button @click="changeStatus(drive.id,new_status)">Set</button>
 
         </div>
     </div>

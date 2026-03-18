@@ -18,8 +18,11 @@
 
 <style scoped>
     .controls {
+        margin-left: 10vw;
+        margin-right: 10vw;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        justify-content: space-around;
     }
 </style>

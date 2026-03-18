@@ -1,44 +1,27 @@
 <script setup>
     import { ref, onMounted } from 'vue'
     import { useAuthStore } from '@/stores/auth'
+    import { useDriveStore } from '@/stores/drives'
 
     const auth = useAuthStore()
+    const driveStore = useDriveStore()
 
-    let driveList = ref([]);
     let elgibility_criteria = ref([])
 
-    async function getDrives() {
-        const response = await fetch("http://localhost:3000/api/create-drive", {
-            method: "GET",
-            headers: {
-                "Authentication-Token": auth.token
-            },
-        })
+    onMounted(async()=>{
+        await driveStore.fetchDrivesByCompany()
+    })
 
-        driveList.value = await response.json()
-    }
-
-    getDrives()
-
-    async function deleteDrive(id) {
-        const response = await fetch("http://localhost:3000/api/create-drive", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": auth.token
-            },
-            body: JSON.stringify({
-                id: id
-            })
-        })
-        await getDrives();
+    async function delete_drive(id) {
+        await driveStore.deleteDrive(id)
+        await driveStore.fetchDrivesByCompany()
     }
 </script>
 
 <template>
     <div class="container">
         <h2>Your Drives</h2>
-        <div v-for="drive in driveList" class="profile">
+        <div v-for="drive in driveStore.drives" class="profile">
             <h4>{{ drive.job_title }}</h4>
             <p style="color:green;" v-if="drive.status=='approved'"><strong>Approval Status:</strong>       Approved</p>
             <p style="color:blue;" v-if="drive.status=='pending'"><strong>Approval Status:</strong>       Pending</p>
@@ -52,7 +35,7 @@
 
             <p><strong>Deadline:</strong> <br>           {{ drive.deadline }}</p>
 
-            <button @click="deleteDrive(drive.id)">Delete Drive</button>
+            <button @click="delete_drive(drive.id)">Delete Drive</button>
 
         </div>
     </div>
@@ -79,7 +62,6 @@
         padding-top: 50px;
         padding-bottom: 50px;
         box-shadow: 10px 10px 5px lightblue;
-        margin-bottom: 50px;
     }
 
     .profile {
