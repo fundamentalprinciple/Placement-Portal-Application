@@ -65,7 +65,7 @@ class ApplyPlacementDrive(Resource):
     
     @auth_token_required
     @roles_required("student")
-    def get(self): # A bug
+    def get(self):
         user_id = current_user.id
         stu_id = Student.query.filter_by(user_id=user_id).first().id
         applications = Application.query.filter_by(student_id=stu_id).all()
@@ -73,11 +73,13 @@ class ApplyPlacementDrive(Resource):
         appList=[]
         for app in applications:
             appList.append({
-                "drive_id": app.drive_id,
+                "id": app.id,
                 "company_name": Company.query.get(PlacementDrive.query.get(app.drive_id).company_id).name,
                 "job_title": PlacementDrive.query.get(app.drive_id).job_title,
+                "job_description": PlacementDrive.query.get(app.drive_id).job_description,
                 "application_date": app.application_date,
                 "status": app.status
+
             })
         return make_response(
             jsonify(appList),
@@ -112,6 +114,41 @@ class ApplyPlacementDrive(Resource):
 
         result = {
             'message': f'Application to drive {drive_id} made.'
+
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+
+    @auth_token_required
+    @roles_required("student")
+    def delete(self):
+        post_cred = request.get_json()
+        print("*"*100)
+        print(post_cred)
+        app_id = post_cred['app_id']
+        if not app_id:
+            result = {
+                'message': 'drive_id required'
+            }
+            return make_response(
+                jsonify(result),
+            )
+        app = Application.query.get(app_id)
+        if not app:
+            result = {
+                'message': f'No application with id {app_id}'
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+        db.session.delete(app)
+        db.session.commit()
+    
+        result = {
+            'message': f'Application deleted.'
 
         }
         return make_response(

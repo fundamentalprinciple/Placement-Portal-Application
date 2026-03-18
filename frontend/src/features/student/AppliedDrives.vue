@@ -12,18 +12,11 @@
 
 
     onMounted(async() => {
-        await driveStore.fetchAllDrives()
+        await driveStore.fetchAppliedDrives()
     })
 
-    const approvedDrives = computed(() => {
-        return driveStore.drives.filter(
-            drive => drive.status === 'approved'
-        )
-    })
-    
-    async function apply(id) {
-        await driveStore.applyDrive(id);
-        await driveStore.fetchAllDrives()
+    async function deleteApp(id) {
+        await driveStore.deleteApplication(id);
         await driveStore.fetchAppliedDrives()
     }
 
@@ -32,20 +25,18 @@
 
 <template>
     <div class="container">
-        <h2>Ongoing Drives</h2>
-        <div v-for="drive in approvedDrives" class="profile">
-            <h4>{{ drive.job_title }}</h4>
-            <p><strong>Job Description:</strong> <br>           {{ drive.job_description }}</p>
-            <p><strong>Company:</strong>           {{ drive.company_name }}</p>
+        <h2>Applied Drives</h2>
+        <div v-for="app in driveStore.applications" class="profile">
+            <h4>{{ app.job_title }}</h4>
+            <p><strong>Job Description:</strong> <br>           {{ app.job_description }}</p>
+            <p><strong>Company:</strong> <br>           {{ app.company_name }}</p>
+            <p><strong>Application Date:</strong> <br> {{ app.application_date }}</p>
+            <p style="color:green;" v-if="app.status=='selected'"><strong>Status:</strong>       Selected</p>
+            <p style="color:yellow;" v-if="app.status=='shortlisted'"><strong>Status:</strong>       Shortlisted</p>
+            <p style="color:red;" v-if="app.status=='rejected'"><strong>Status:</strong>       Not Qualified</p>
+            <p style="color:blue;" v-if="app.status=='applied'"><strong>Status:</strong>       Applied</p> 
 
-            <p><strong>Eligibility Criteria:</strong></p>
-            <p>Major: <br>{{JSON.parse(drive.eligibility_criteria)[0]}}</p>
-            <p>Min. CGPA: <br>{{JSON.parse(drive.eligibility_criteria)[1]}}</p>
-            <p>Min. Year of Graduation: <br>{{JSON.parse(drive.eligibility_criteria)[2]}}</p>
-
-            <p><strong>Deadline:</strong> <br>           {{ drive.deadline }}</p>
-
-            <button @click="apply(drive.id)">Apply</button>
+            <button @click="deleteApp(app.id)">Withdraw</button>
 
         </div>
     </div>
@@ -95,7 +86,8 @@
     }
 
     button:hover {
-        background-color: #E3D888;
+        background-color: red;
+        color: white;
     }
 
     select {

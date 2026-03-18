@@ -3,7 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 
 export const useDriveStore = defineStore('drive', {
   state: () => ({
-    drives: []
+    drives: [],
+    applications: []
   }),
   actions: {
 
@@ -105,7 +106,7 @@ export const useDriveStore = defineStore('drive', {
             'Authentication-Token': auth.token
           },
           body: JSON.stringify({
-            id: driveId,
+            drive_id: driveId,
           })
         })
         if (!response.ok) throw new Error('Failed to change drive status')
@@ -113,6 +114,41 @@ export const useDriveStore = defineStore('drive', {
         this.error = err.message || 'Error changing drive status'
       }
         
+    },
+
+    async deleteApplication(app_id) {
+        const auth = useAuthStore()
+        try {
+            const response = await fetch('http://localhost:3000/api/apply-placement-drive', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication-Token': auth.token
+                },
+                body: JSON.stringify({
+                    app_id: app_id,
+                })
+            })
+            if (!response.ok) throw new Error('Failed to change delete application.')
+        } catch (err) {
+            this.error = err.message || 'Error'
+        }
+    },
+    
+    async fetchAppliedDrives() {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch("http://localhost:3000/api/apply-placement-drive", {
+          method: 'GET',
+          headers: {
+            'Authentication-Token': auth.token
+          }
+        })
+        if (!response.ok) throw new Error('Failed to fetch drives')
+        this.applications = await response.json()
+      } catch (err) {
+        this.error = err.message || 'Error fetching drives'
+      }        
     }
 
 }})
