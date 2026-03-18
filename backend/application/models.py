@@ -52,7 +52,7 @@ class Application(db.Model):
 
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True) #doesnt get added until admin registers them
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     name = name = db.Column(db.String(150), unique=True, nullable=False)
     hr_contact = db.Column(db.Text, nullable=False) #email
     website = db.Column(db.Text, nullable=False) 

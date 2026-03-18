@@ -13,6 +13,31 @@ class CreateDrive(Resource):
 
     @auth_token_required
     @roles_required("company")
+    def get(self):
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        company_id = company.id
+        drives = PlacementDrive.query.filter_by(company_id=company_id).all()
+
+        DriveList = []
+        for drive in drives:
+            DriveList.append({
+                'id': drive.id,
+                'company_id': drive.company_id,
+                'company_name': Company.query.get(drive.company_id).name,
+                'job_title': drive.job_title,
+                'job_description': drive.job_description,
+                'eligibility_criteria': drive.eligibility_criteria,
+                'deadline': drive.deadline,
+                'status': drive.status
+            })
+        return make_response(
+            jsonify(DriveList),
+            200
+        )
+
+        
+    @auth_token_required
+    @roles_required("company")
     def post(self):
         post_cred = request.get_json()
 
@@ -31,6 +56,41 @@ class CreateDrive(Resource):
 
         result = {
             'message': 'Drive created successfully.'
+        }
+        return make_response(
+            jsonify(result),
+            200
+        )
+
+    
+    @auth_token_required
+    @roles_required("company")
+    def delete(self):
+        drive_id = request.get_json()['id']
+        if not(drive_id):
+            result = {
+                'message': "Drive ID is required."
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+
+        drive = PlacementDrive.query.get(drive_id)
+        if not drive:
+            result = {
+                'message': 'Drive not found.'
+            }
+            return make_response(
+                jsonify(result),
+                404
+            )
+
+        db.session.delete(drive)
+        db.session.commit()
+        
+        result = {
+            'message': 'Drive deleted successfully.'
         }
         return make_response(
             jsonify(result),
