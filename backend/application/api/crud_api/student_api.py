@@ -89,6 +89,13 @@ class ApplyPlacementDrive(Resource):
     def post(self):
         post_cred = request.get_json()
         drive_id = post_cred['drive_id']
+        if not drive_id:
+            result = {
+                'message': 'drive_id required'
+            }
+            return make_response(
+                jsonify(result),
+            )
         drive = PlacementDrive.query.get(drive_id)
         if not drive:
             result = {

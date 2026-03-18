@@ -166,7 +166,6 @@ class ManageCompanyProfiles(Resource):
 class ManageDrives(Resource):
 
     @auth_token_required
-    @roles_required("admin")
     def get(self):
         drives = PlacementDrive.query.all()
         DriveList = []

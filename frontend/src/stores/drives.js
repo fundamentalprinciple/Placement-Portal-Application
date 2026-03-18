@@ -93,5 +93,26 @@ export const useDriveStore = defineStore('drive', {
       } finally {
         this.loading = false
       }
+    },
+
+    async applyDrive(driveId) {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/apply-placement-drive', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': auth.token
+          },
+          body: JSON.stringify({
+            id: driveId,
+          })
+        })
+        if (!response.ok) throw new Error('Failed to change drive status')
+      } catch (err) {
+        this.error = err.message || 'Error changing drive status'
+      }
+        
     }
+
 }})
