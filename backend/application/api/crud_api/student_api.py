@@ -109,8 +109,14 @@ class ApplyPlacementDrive(Resource):
             )
         student = Student.query.filter_by(user_id=current_user.id).first()
         new_application = Application(student_id=student.id, drive_id=drive.id, application_date=datetime.datetime.now(), status="applied")
-        db.session.add(new_application)
-        db.session.commit()
+        try:
+            db.session.add(new_application)
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return make_response(jsonify({
+            'message': 'You have already applied to this drive or a constraint failed.'
+            }), 409)
 
         result = {
             'message': f'Application to drive {drive_id} made.'

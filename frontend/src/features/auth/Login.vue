@@ -30,6 +30,7 @@
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 alert(errorData.message || "Login failed. Please check your credentials or try again later.");
+                document.getElementById("form").reset();
                 return;
             }
 
@@ -37,14 +38,16 @@
             const token = data['auth_token']
             if (!token) {
                 alert("Authentication token not received. Please try again.");
+                document.getElementById("form").reset();
                 return;
             }
                 const auth = useAuthStore()
                 auth.login({ token, username: username.value })
                 await auth.authenticate()
-            router.push("/");
+                router.push("/");
         } catch (err) {
             alert("An unexpected error occurred. Please try again.");
+            document.getElementById("form").reset();
         }
     }
 
@@ -52,7 +55,7 @@
 </script>
 
 <template>
-    <form @submit.prevent="login()">
+    <form id="form" @submit.prevent="login()">
         <fieldset>
             <legend>Login</legend>
             <div class="group">

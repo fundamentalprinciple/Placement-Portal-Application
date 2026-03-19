@@ -1,0 +1,5 @@
+Web Developer: Builds and maintains responsive websites, writes clean code, optimizes performance, and collaborates with designers to deliver user-friendly digital experiences.
+
+Software Engineer: Designs, develops, and tests software applications, solves technical problems, and improves system performance using modern programming languages and tools.
+
+Civil Engineer: Plans, designs, and oversees construction projects, ensuring safety, compliance, and efficient use of materials for infrastructure development.

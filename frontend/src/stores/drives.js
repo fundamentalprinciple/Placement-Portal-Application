@@ -4,7 +4,8 @@ import { useAuthStore } from '@/stores/auth'
 export const useDriveStore = defineStore('drive', {
   state: () => ({
     drives: [],
-    applications: []
+    applications: [],
+    error: "",
   }),
   actions: {
 
@@ -109,9 +110,9 @@ export const useDriveStore = defineStore('drive', {
             drive_id: driveId,
           })
         })
-        if (!response.ok) throw new Error('Failed to change drive status')
+        if (!response.ok) throw new Error('Failed.')
       } catch (err) {
-        this.error = err.message || 'Error changing drive status'
+        this.error = err.message || 'Error applying for drive.'
       }
         
     },
@@ -149,6 +150,50 @@ export const useDriveStore = defineStore('drive', {
       } catch (err) {
         this.error = err.message || 'Error fetching drives'
       }        
+    },
+
+    async fetchApplicationsByCompany() {
+        const auth = useAuthStore()
+        try {
+            const response = await fetch("http://localhost:3000/api/manage-applications", {
+                method: 'GET',
+                headers: {
+                    'Authentication-Token': auth.token
+                }
+            })
+            if (!response.ok) throw new Error('Failed to fetch applications.')
+            this.applications = await response.json()
+        } catch (err) {
+            this.error = err.message || 'Error fetching drives'
+        }
+    },
+
+    async updateApplicationStatus(app_id,new_status) {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/manage-applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': auth.token
+          },
+          body: JSON.stringify({
+            application_id: app_id,
+            new_status: new_status
+          })
+        })
+        if (!response.ok) throw new Error('Failed to change application status')
+      } catch (err) {
+        this.error = err.message || 'Error changing application status'
+      }
+        
     }
 
 }})
+
+
+
+
+
+
+

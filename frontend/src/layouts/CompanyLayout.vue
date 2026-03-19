@@ -2,7 +2,7 @@
     import Hello from '@/components/Hello.vue'
     import CreateDrive from '@/features/company/CreateDrive.vue'
     import ViewDrives from '@/features/company/ViewDrives.vue'
-    //import ManageApplications from '@/features/company/ManageApplications.vue'
+    import ManageApplications from '@/features/company/ManageApplications.vue'
     //import ScheduleInterview from '@/features/company/ScheduleInterview.vue'
     //import Recruit from '@/features/company/Recruit.vue'
 
@@ -13,6 +13,7 @@
     <div class="controls">
         <CreateDrive />
         <ViewDrives />
+        <ManageApplications />
     </div>
 </template>
 
@@ -25,4 +26,9 @@
         flex-wrap: wrap;
         justify-content: space-around;
     }
+
+    .controls > * {
+        margin-top: 30px;
+    }
+
 </style>

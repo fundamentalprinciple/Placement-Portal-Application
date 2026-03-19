@@ -1,6 +1,6 @@
 from .database import db
 from flask_security import UserMixin, RoleMixin
-from sqlalchemy import Enum
+from sqlalchemy import Enum, UniqueConstraint
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +45,10 @@ class Application(db.Model):
     drive_id = db.Column(db.Integer, db.ForeignKey("placement_drive.id"), nullable=False)
     application_date = db.Column(db.Date, nullable=False)
     status = db.Column(Enum('applied','shortlisted','selected','rejected'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('student_id','drive_id',name='unique_student_drive'),
+    )
     
     student = db.relationship("Student", backref="applications")
     drive  = db.relationship("PlacementDrive", backref="applications")

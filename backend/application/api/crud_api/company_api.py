@@ -118,6 +118,7 @@ class ManageApplications(Resource):
                     "job_title": PlacementDrive.query.get(app.drive_id).job_title,
                     "student_id": Student.query.get(app.student_id).id,
                     "student_name": Student.query.get(app.student_id).name,
+                    "student_qualifications": f'["{Student.query.get(app.student_id).degree}",{Student.query.get(app.student_id).cgpa},{Student.query.get(app.student_id).year}]',
                     "application_date": app.application_date,
                     "status": app.status
                 })
