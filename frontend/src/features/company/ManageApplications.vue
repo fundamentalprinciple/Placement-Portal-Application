@@ -32,7 +32,7 @@
 
             <p><strong>Application Date:</strong> <br> {{ app.application_date }}</p>
             <p style="color:green;" v-if="app.status=='selected'"><strong>Status:</strong>       Selected</p>
-            <p style="color:yellow;" v-if="app.status=='shortlisted'"><strong>Status:</strong>       Shortlisted</p>
+            <p style="color:orange;" v-if="app.status=='shortlisted'"><strong>Status:</strong>       Shortlisted</p>
             <p style="color:red;" v-if="app.status=='rejected'"><strong>Status:</strong>       Not Qualified</p>
             <p style="color:blue;" v-if="app.status=='applied'"><strong>Status:</strong>       Applied</p> 
 
@@ -43,7 +43,7 @@
                 <option value="rejected">Reject</option>
             </select><br>
  
-            <button @click="update(drive.id, new_status)">Set</button>
+            <button @click="update(app.id, new_status)">Set</button>
 
         </div>
     </div>

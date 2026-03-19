@@ -113,7 +113,7 @@ class ManageApplications(Resource):
         for appList in applications:
             for app in appList:
                 result.append({
-                    "application_id": app.id,
+                    "id": app.id,
                     "drive_id": app.drive_id,
                     "job_title": PlacementDrive.query.get(app.drive_id).job_title,
                     "student_id": Student.query.get(app.student_id).id,
@@ -132,6 +132,8 @@ class ManageApplications(Resource):
     @roles_required("company")
     def post(self):
         post_cred = request.get_json()
+        print("*"*100)
+        print(post_cred)
         application_id = post_cred['application_id']
         new_status = post_cred['new_status']
 

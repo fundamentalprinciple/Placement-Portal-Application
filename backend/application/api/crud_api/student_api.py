@@ -131,8 +131,6 @@ class ApplyPlacementDrive(Resource):
     @roles_required("student")
     def delete(self):
         post_cred = request.get_json()
-        print("*"*100)
-        print(post_cred)
         app_id = post_cred['app_id']
         if not app_id:
             result = {
