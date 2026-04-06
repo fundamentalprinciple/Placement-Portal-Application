@@ -10,7 +10,11 @@ const router = createRouter({
     { path: '/register-student', component: MainLayout },
     { path: '/register-company', component: MainLayout },
     { path: '/logout', component: MainLayout },
-    { path: '/about', component: MainLayout }
+    { path: '/about', component: MainLayout },
+    { path: '/admin/student-profile/:id', component: MainLayout },
+    { path: '/admin/company-profile/:id', component: MainLayout },
+    { path: '/company/profile', component: MainLayout },
+    { path: '/student/profile', component: MainLayout }
     ]
 })
 

@@ -5,9 +5,95 @@ export const useDriveStore = defineStore('drive', {
   state: () => ({
     drives: [],
     applications: [],
+    interviews: [],
+    studentInterviews: [],
     error: "",
+    loading: false
   }),
   actions: {
+
+    async fetchCompanyInterviews() {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+          method: 'GET',
+          headers: {
+            'Authentication-Token': auth.token
+          }
+        })
+        if (!response.ok) throw new Error('Failed to fetch interviews')
+        this.interviews = await response.json()
+      } catch (err) {
+        this.error = err.message || 'Error fetching interviews'
+      }
+    },
+
+    async cancelCompanyInterview(interview_id) {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': auth.token
+          },
+          body: JSON.stringify({ interview_id })
+        })
+        if (!response.ok) throw new Error('Failed to cancel interview')
+      } catch (err) {
+        this.error = err.message || 'Error cancelling interview'
+      }
+    },
+
+    async completeCompanyInterview(interview_id) {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': auth.token
+          },
+          body: JSON.stringify({ interview_id, completed: true })
+        })
+        if (!response.ok) throw new Error('Failed to complete interview')
+      } catch (err) {
+        this.error = err.message || 'Error completing interview'
+      }
+    },
+
+    async fetchStudentInterviews() {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/manage-interview-request', {
+          method: 'GET',
+          headers: {
+            'Authentication-Token': auth.token
+          }
+        })
+        if (!response.ok) throw new Error('Failed to fetch student interviews')
+        this.studentInterviews = await response.json()
+      } catch (err) {
+        this.error = err.message || 'Error fetching student interviews'
+      }
+    },
+
+    async respondInterview(interview_id, accept) {
+      const auth = useAuthStore()
+      try {
+        const response = await fetch('http://localhost:3000/api/manage-interview-request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authentication-Token': auth.token
+          },
+          body: JSON.stringify({ interview_id, accept })
+        })
+        if (!response.ok) throw new Error('Failed to respond to interview')
+      } catch (err) {
+        this.error = err.message || 'Error responding to interview'
+      }
+    },
 
     async fetchDrivesByCompany() {
       const auth = useAuthStore()
@@ -155,6 +241,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchApplicationsByCompany() {
         const auth = useAuthStore()
         try {
+            this.loading = true;
             const response = await fetch("http://localhost:3000/api/manage-applications", {
                 method: 'GET',
                 headers: {
@@ -163,6 +250,7 @@ export const useDriveStore = defineStore('drive', {
             })
             if (!response.ok) throw new Error('Failed to fetch applications.')
             this.applications = await response.json()
+            this.loading = false;
         } catch (err) {
             this.error = err.message || 'Error fetching drives'
         }

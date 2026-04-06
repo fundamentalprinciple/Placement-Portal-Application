@@ -2,6 +2,7 @@
     import { ref, onMounted } from 'vue'
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
+    import ScheduleInterview from '@/features/company/ScheduleInterview.vue'    
 
     const auth = useAuthStore()
     const driveStore = useDriveStore()
@@ -9,7 +10,11 @@
     let new_status = ref("")
 
     onMounted(async()=>{
-        await driveStore.fetchApplicationsByCompany()
+        try{
+            await driveStore.fetchApplicationsByCompany()
+        } catch(err) {
+            console.error("error")
+        }
     })
 
     async function update(id, new_status) {
@@ -21,14 +26,18 @@
 <template>
     <div class="container">
         <h2>Applications</h2>
-        <div v-for="app in driveStore.applications" class="profile">
+        <div v-if="driveStore.loading === false" v-for="app in driveStore.applications" class="profile">
             <h4>{{ app.job_title }}</h4>
             <p><strong>Student:</strong> <br>           {{ app.student_name }}</p>
 
-            <p><strong>Qualifications:</strong></p>
-            <p>Major: <br>{{JSON.parse(app.student_qualifications)[0]}}</p>
-            <p>CGPA: <br>{{JSON.parse(app.student_qualifications)[1]}}</p>
-            <p>Year of Graduation: <br>{{JSON.parse(app.student_qualifications)[2]}}</p>
+            <p v-if="app.student_qualifications">
+                <strong>Qualifications:</strong><br>
+                <span v-if="(parsed = JSON.parse(app.student_qualifications))">
+                    Major: {{ parsed[0] }} <br>
+                    CGPA: {{ parsed[1] }} <br>
+                    Year: {{ parsed[2] }}
+                </span>
+            </p>
 
             <p><strong>Application Date:</strong> <br> {{ app.application_date }}</p>
             <p style="color:green;" v-if="app.status=='selected'"><strong>Status:</strong>       Selected</p>
@@ -44,6 +53,8 @@
             </select><br>
  
             <button @click="update(app.id, new_status)">Set</button>
+            
+            <ScheduleInterview :application="app" />
 
         </div>
     </div>

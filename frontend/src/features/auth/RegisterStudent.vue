@@ -65,7 +65,7 @@
                 <select v-model="gender" id="gender" name="gender" type="text" required >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
-                    <option value="Trans">Trans</option>
+                    <option value="Trans">other</option>
                 </select>
 
             <div class="group">

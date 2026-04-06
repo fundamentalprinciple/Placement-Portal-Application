@@ -9,6 +9,45 @@ from ...database import db
 from ...models import *
 
 
+class CompanyProfile(Resource):
+    
+    @auth_token_required
+    @roles_required("company")
+    def get(self):
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        user = User.query.get(company.user_id)
+        result = {
+            'name': company.name,
+            'hr_contact': company.hr_contact,
+            'website': company.website,
+            'email': user.email if user else None,
+            'approval_status': company.approval_status,
+            'pending_name': company.pending_name,
+            'pending_hr_contact': company.pending_hr_contact,
+            'pending_website': company.pending_website
+        }
+        return make_response(jsonify(result), 200)
+    
+    @auth_token_required
+    @roles_required("company")
+    def post(self):
+        post_cred = request.get_json() or {}
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        
+        if 'name' in post_cred and post_cred['name'].strip():
+            company.pending_name = post_cred['name'].strip()
+        if 'hr_contact' in post_cred and post_cred['hr_contact'].strip():
+            company.pending_hr_contact = post_cred['hr_contact'].strip()
+        if 'website' in post_cred and post_cred['website'].strip():
+            company.pending_website = post_cred['website'].strip()
+        
+        db.session.commit()
+        result = {
+            'message': 'Profile changes submitted for admin approval. Your current profile remains active.'
+        }
+        return make_response(jsonify(result), 200)
+
+
 class CreateDrive(Resource):
 
     @auth_token_required
@@ -181,56 +220,136 @@ class ScheduleInterview(Resource):
     @auth_token_required
     @roles_required("company")
     def get(self):
-        company_id=Company.query.filter_by(user_id=current_user.id).first().id
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        company_id = company.id
         interviews = ScheduledInterview.query.filter_by(company_id=company_id).all()
+
         result = []
         for interview in interviews:
+            student = Student.query.get(interview.student_id)
             result.append({
                 'id': interview.id,
                 'student_id': interview.student_id,
-                'company_message': interview.company_message
-            }) 
+                'student_name': student.name if student else None,
+                'company_message': interview.company_message,
+                'interview_date': interview.interview_date.isoformat() if interview.interview_date else None,
+                'interview_time': interview.interview_time.strftime('%H:%M') if interview.interview_time else None,
+                'interview_address': interview.interview_address,
+                'accepted': interview.accepted,
+                'completed': interview.completed
+            })
 
-        return make_response(
-            jsonify(result),
-            200
-        )
-
+        return make_response(jsonify(result), 200)
  
     @auth_token_required
     @roles_required("company")
     def post(self):
-        post_cred = request.get_json()
-        if not (post_cred['student_id'] or post_cred['message']):
-            result = {
-                'message': "'student_id' and 'message' are required."
-            }
-            return make_response(
-                jsonify(appList),
-                403
-            )
+        post_cred = request.get_json() or {}
+        student_id = post_cred.get('student_id')
+        message = (post_cred.get('message') or '').strip()
+        address = (post_cred.get('address') or '').strip()
+        date_str = post_cred.get('date')
+        time_str = post_cred.get('time')
 
-        old_interview = ScheduledInterview.query.filter_by(student_id=post_cred['student_id']).first()
+        if not student_id or not message or not address or not date_str or not time_str:
+            result = {
+                'message': "'student_id', 'message', 'address', 'date' and 'time' are required."
+            }
+            return make_response(jsonify(result), 400)
+
+        student = Student.query.get(student_id)
+        if not student:
+            result = {
+                'message': f'Student with id {student_id} does not exist.'
+            }
+            return make_response(jsonify(result), 404)
+
+        try:
+            interview_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            interview_time = datetime.datetime.strptime(time_str, '%H:%M').time()
+        except ValueError:
+            result = {
+                'message': "Date must be YYYY-MM-DD and time must be HH:MM."
+            }
+            return make_response(jsonify(result), 400)
+
+        old_interview = ScheduledInterview.query.filter_by(student_id=student_id).first()
         if old_interview:
             result = {
-                'message': f"An interview with student {post_cred['student_id']} is already scheduled."
+                'message': f"An interview with student {student_id} is already scheduled."
             }
-            return make_response(
-                jsonify(result),    
-                200
-            )
+            return make_response(jsonify(result), 409)
 
-        new_interview = ScheduledInterview(company_id=Company.query.filter_by(user_id=current_user.id).first().id , student_id=post_cred['student_id'], company_message = post_cred['message'])
+        new_interview = ScheduledInterview(
+            company_id=Company.query.filter_by(user_id=current_user.id).first().id,
+            student_id=student_id,
+            company_message=message,
+            interview_date=interview_date,
+            interview_time=interview_time,
+            interview_address=address
+        )
 
         db.session.add(new_interview)
         db.session.commit()
+
         result = {
-            'message': f"Interview with student {post_cred['student_id']} scheduled."
+            'message': f"Interview with student {student_id} scheduled."
         }
-        return make_response(
-            jsonify(result),
-            200
-        )
+        return make_response(jsonify(result), 200)
+
+
+    @auth_token_required
+    @roles_required("company")
+    def delete(self):
+        post_cred = request.get_json() or {}
+        interview_id = post_cred.get('interview_id')
+        if not interview_id:
+            result = {'message': "'interview_id' is required."}
+            return make_response(jsonify(result), 400)
+
+        interview = ScheduledInterview.query.get(interview_id)
+        if not interview:
+            result = {'message': 'Interview not found.'}
+            return make_response(jsonify(result), 404)
+
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        if interview.company_id != company.id:
+            result = {'message': 'Not authorized to cancel this interview.'}
+            return make_response(jsonify(result), 403)
+
+        db.session.delete(interview)
+        db.session.commit()
+
+        result = {'message': 'Interview cancelled successfully.'}
+        return make_response(jsonify(result), 200)
+
+    @auth_token_required
+    @roles_required("company")
+    def put(self):
+        post_cred = request.get_json() or {}
+        interview_id = post_cred.get('interview_id')
+        completed = post_cred.get('completed')
+
+        if not interview_id or completed is None:
+            result = {'message': "'interview_id' and 'completed' are required."}
+            return make_response(jsonify(result), 400)
+
+        interview = ScheduledInterview.query.get(interview_id)
+        if not interview:
+            result = {'message': 'Interview not found.'}
+            return make_response(jsonify(result), 404)
+
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        if interview.company_id != company.id:
+            result = {'message': 'Not authorized to update this interview.'}
+            return make_response(jsonify(result), 403)
+
+        interview.completed = bool(completed)
+        db.session.commit()
+
+        result = {'message': 'Interview marked completed.'}
+        return make_response(jsonify(result), 200)
+
 
 
 class Recruit(Resource):

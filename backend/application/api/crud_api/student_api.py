@@ -194,55 +194,53 @@ class ManageInterviewRequest(Resource):
         interviews = ScheduledInterview.query.filter_by(student_id=student_id).all()
         result = []
         for interview in interviews:
+            company = Company.query.get(interview.company_id)
             result.append({
                 'id': interview.id,
-                'company_id': interview.company_id,
-                'company_message': interview.company_message
+                'company_name': company.name if company else None,
+                'company_message': interview.company_message,
+                'interview_date': interview.interview_date.isoformat() if interview.interview_date else None,
+                'interview_time': interview.interview_time.strftime('%H:%M') if interview.interview_time else None,
+                'interview_address': interview.interview_address,
+                'accepted': interview.accepted,
+                'completed': interview.completed
             })
 
-        return make_response(
-            jsonify(result),
-            200
-        )
+        return make_response(jsonify(result), 200)
 
 
+    @auth_token_required
+    @roles_required("student")
     def post(self):
-        post_cred = request.get_json()
-        if not(post_cred['interview_id'] or post_cred['accept']):
-            result = {
-                'message': 'Specify an interview_id to accept request.'
-            }
-            return make_request(
-                jsonify(result),
-                404
-            )
+        post_cred = request.get_json() or {}
+        interview_id = post_cred.get('interview_id')
+        accept = post_cred.get('accept')
+
+        if not interview_id or accept is None:
+            result = {'message': "'interview_id' and 'accept' are required."}
+            return make_response(jsonify(result), 400)
+
         interview = ScheduledInterview.query.get(interview_id)
-        if post_cred['accept']==True:
+        if not interview:
+            result = {'message': 'Interview not found.'}
+            return make_response(jsonify(result), 404)
+
+        student = Student.query.filter_by(user_id=current_user.id).first()
+        if interview.student_id != student.id:
+            result = {'message': 'Not authorized to modify this interview.'}
+            return make_response(jsonify(result), 403)
+
+        if accept is True:
             interview.accepted = True
             db.session.commit()
-            result = {
-                'message': f'Interview {interview_id} accepted.'
-            }
-            return make_response(
-                jsonify(result),
-                200
-            )
-        elif post_cred['accept']==False:
-            interview.accepted = False
+            result = {'message': f'Interview {interview_id} accepted.'}
+            return make_response(jsonify(result), 200)
+
+        if accept is False:
+            db.session.delete(interview)
             db.session.commit()
-            result = {
-                'message': f'Interview {interview_id} rejected.'
-            }
-            return make_response(
-                jsonify(result),
-                200
-            )
-        else:
-            result = {
-                'message': f"Invalid value for the field 'accept', set it to either True or False."
-            }
-            return make_response(
-                jsonify(result),
-                403
-            )            
-        
+            result = {'message': f'Interview {interview_id} cancelled.'}
+            return make_response(jsonify(result), 200)
+
+        result = {'message': "Invalid value for 'accept'; use true or false."}
+        return make_response(jsonify(result), 400) 

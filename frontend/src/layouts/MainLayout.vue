@@ -9,6 +9,11 @@
     import StudentLayout from '@/layouts/StudentLayout.vue'
     import NotAuthenticated from '@/layouts/NotAuthenticated.vue'
 
+    import AdminStudentProfile from '@/features/admin/AdminStudentProfile.vue'
+    import AdminCompanyProfile from '@/features/admin/AdminCompanyProfile.vue'
+    import CompanyProfile from '@/features/company/CompanyProfile.vue'
+    import StudentProfile from '@/features/student/StudentProfile.vue'
+
     const route = useRoute()   
     const auth = useAuthStore()
 
@@ -16,7 +21,10 @@
 
 <template>
     <AuthLayout v-if="['/login', '/register-student', '/register-company', '/logout'].includes(route.path)"/>
-    
+    <AdminStudentProfile v-else-if="auth.isAuthenticated && auth.role == 'admin' && route.path.startsWith('/admin/student-profile')" />
+    <AdminCompanyProfile v-else-if="auth.isAuthenticated && auth.role == 'admin' && route.path.startsWith('/admin/company-profile')" />    
+    <CompanyProfile v-else-if="auth.isAuthenticated && auth.role=='company' && route.path=='/company/profile'" />
+    <StudentProfile v-else-if="auth.isAuthenticated && auth.role=='student' && route.path=='/student/profile'" />
     <AdminLayout v-else-if="auth.isAuthenticated && auth.role=='admin'" />
     <CompanyLayout v-else-if="auth.isAuthenticated && auth.role=='company'" />
     <StudentLayout v-else-if="auth.isAuthenticated && auth.role=='student'"  />

@@ -61,6 +61,10 @@ class Company(db.Model):
     hr_contact = db.Column(db.Text, nullable=False) #email
     website = db.Column(db.Text, nullable=False) 
     approval_status = db.Column(Enum('approved','pending','rejected'), nullable=False)
+    pending_name = db.Column(db.String(150), nullable=True)
+    pending_hr_contact = db.Column(db.Text, nullable=True)
+    pending_website = db.Column(db.Text, nullable=True)
+
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -105,7 +109,11 @@ class ScheduledInterview(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
     company_message = db.Column(db.Text, nullable=True)
+    interview_date = db.Column(db.Date, nullable=False)
+    interview_time = db.Column(db.Time, nullable=False)
+    interview_address = db.Column(db.String(255), nullable=False)
     accepted = db.Column(db.Boolean(), default=False)
+    completed = db.Column(db.Boolean(), default=False)    
 
 class Recruitment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
