@@ -1,6 +1,7 @@
 <script setup>
     import { useRouter } from 'vue-router'
     import Hello from '@/components/Hello.vue'
+    import CompanyApplicationSearch from '@/features/company/CompanyApplicationSearch.vue'
     import CreateDrive from '@/features/company/CreateDrive.vue'
     import ViewDrives from '@/features/company/ViewDrives.vue'
     import ManageApplications from '@/features/company/ManageApplications.vue'
@@ -11,7 +12,8 @@
 
 <template>
     <Hello />
-    <div class="profile-btn-container">
+    <div class="button-bar">
+        <CompanyApplicationSearch />
         <button @click="router.push('/company/profile')" class="profile-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -29,11 +31,15 @@
 </template>
 
 <style scoped>
-    .profile-btn-container {
+    .button-bar {
         text-align: center;
         margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
     }
-
+    
     .profile-btn {
         background-color: lightblue;
         border: none;
@@ -44,12 +50,13 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        box-shadow: 5px 5px 5px rgba(173, 188, 255, 0.35);
     }
     
     .profile-btn:hover {
         background-color: #9FBFF0;
     }
-
+    
     .controls {
         margin-left: 10vw;
         margin-right: 10vw;
@@ -58,9 +65,8 @@
         flex-wrap: wrap;
         justify-content: space-around;
     }
-
+    
     .controls > * {
         margin-top: 30px;
     }
-
 </style>

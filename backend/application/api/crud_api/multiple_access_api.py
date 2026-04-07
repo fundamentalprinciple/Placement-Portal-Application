@@ -8,6 +8,78 @@ from ...user_datastore import user_datastore
 from ...database import db
 from ...models import *
 
+
+from flask import send_file
+import os
+
+class DownloadStudentResume(Resource):
+
+    @auth_token_required
+    def get(self, student_id):
+        student = Student.query.get(student_id)
+        if not student or not student.resume_filename:
+            return make_response(jsonify({'message': 'Resume not found.'}), 404)
+
+        if current_user.has_role('student'):
+            if student.user_id != current_user.id:
+                return make_response(jsonify({'message': 'Not authorized.'}), 403)
+
+        elif current_user.has_role('company'):
+            company = Company.query.filter_by(user_id=current_user.id).first()
+            if not company:
+                return make_response(jsonify({'message': 'Not authorized.'}), 403)
+
+            has_application = Application.query.join(PlacementDrive).filter(
+                Application.student_id == student_id,
+                PlacementDrive.company_id == company.id
+            ).first()
+
+            has_interview = ScheduledInterview.query.filter_by(
+                student_id=student_id,
+                company_id=company.id
+            ).first()
+
+            if not has_application and not has_interview:
+                return make_response(jsonify({'message': 'Not authorized.'}), 403)
+
+        elif not current_user.has_role('admin'):
+            return make_response(jsonify({'message': 'Not authorized.'}), 403)
+
+        file_path = os.path.join('uploads/resumes', student.resume_filename)
+        if not os.path.exists(file_path):
+            return make_response(jsonify({'message': 'Resume file not found.'}), 404)
+
+        return send_file(file_path, as_attachment=True)
+
+
+class GetStudentProfile(Resource):
+
+    @auth_token_required
+    def get(self, id):
+        student = Student.query.get(id)
+        if not student:
+            return make_response(jsonify({'message': 'Student not found.'}), 404)
+
+        user = User.query.get(student.user_id)
+        department = Department.query.get(student.degree)
+
+        result = {
+            'id': student.id,
+            'user_id': student.user_id,
+            'name': student.name,
+            'gender': student.gender,
+            'degree': department.name if department else student.degree,
+            'cgpa': student.cgpa,
+            'year': student.year,
+            'available': student.available,
+            'account_status': user.active if user else None,
+            'resume_filename': student.resume_filename
+        }
+        return make_response(jsonify(result), 200)
+
+
+
+
 class ViewApprovedDrives(Resource):
 
     @auth_token_required

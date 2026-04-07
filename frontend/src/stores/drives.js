@@ -7,8 +7,8 @@ export const useDriveStore = defineStore('drive', {
     applications: [],
     interviews: [],
     studentInterviews: [],
+    loading: false,
     error: "",
-    loading: false
   }),
   actions: {
 
@@ -165,6 +165,7 @@ export const useDriveStore = defineStore('drive', {
     },
 
     async deleteDrive(driveId) {
+      console.log(parseInt(driveId));  
       const auth = useAuthStore()
       try {
         const response = await fetch('http://localhost:3000/api/create-drive', {

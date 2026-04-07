@@ -38,6 +38,12 @@ class PlacementDrive(db.Model):
     
     company = db.relationship("Company", backref="placement_drives")
 
+    applications = db.relationship(
+        "Application",
+        backref="drive",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,7 +57,6 @@ class Application(db.Model):
     )
     
     student = db.relationship("Student", backref="applications")
-    drive  = db.relationship("PlacementDrive", backref="applications")
 
 
 class Company(db.Model):
@@ -75,6 +80,7 @@ class Student(db.Model):
     cgpa = db.Column(db.Float, nullable=False)
     year = db.Column(Enum('2021','2022','2023','2024','2025','2026'), nullable=False)
     available = db.Column(db.Boolean(), default=True)    
+    resume_filename = db.Column(db.String(255), nullable=True)
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)

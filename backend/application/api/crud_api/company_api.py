@@ -105,7 +105,7 @@ class CreateDrive(Resource):
     @auth_token_required
     @roles_required("company")
     def delete(self):
-        drive_id = request.get_json()['id']
+        drive_id = int(request.get_json()['id'])
         if not(drive_id):
             result = {
                 'message': "Drive ID is required."
@@ -213,6 +213,39 @@ class ManageApplications(Resource):
             jsonify(result),
             200
         )       
+
+class SearchApplications(Resource):
+
+    @auth_token_required
+    @roles_required("company")
+    def post(self):
+        post_cred = request.get_json() or {}
+        search_term = (post_cred.get('search') or '').strip().lower()
+        
+        if not search_term:
+            return make_response(jsonify([]), 200)
+
+        company = Company.query.filter_by(user_id=current_user.id).first()
+        company_id = company.id
+        
+        drives = PlacementDrive.query.filter_by(company_id=company_id).all()
+        applications = []
+        
+        for drive in drives:
+            drive_apps = Application.query.filter_by(drive_id=drive.id).all()
+            for app in drive_apps:
+                student = Student.query.get(app.student_id)
+                if student and search_term in student.name.lower():
+                    applications.append({
+                        'id': app.id,
+                        'student_id': student.id,
+                        'student_name': student.name,
+                        'job_title': drive.job_title,
+                        'label': f"{student.name} ({drive.job_title})"
+                    })
+        
+        applications.sort(key=lambda x: x['label'].lower())
+        return make_response(jsonify(applications), 200)
 
 
 class ScheduleInterview(Resource):

@@ -8,17 +8,50 @@
 
     const new_status = ref('approved')
 
+    const studentProfile = ref(null)
+
+    async function getStudentProfile() {
+    const response = await fetch("http://localhost:3000/api/self-manage-student-profile", {
+        method: 'GET',
+        headers: {
+            'Authentication-Token': auth.token
+        }
+    })
+    if (response.ok) {
+        studentProfile.value = await response.json()
+    }
+}
+
     let eligibility_criteria = ref([]);
 
 
     onMounted(async() => {
+        await getStudentProfile()
         await driveStore.fetchAllDrives()
     })
 
-    const approvedDrives = computed(() => {
-        return driveStore.drives.filter(
-            drive => drive.status === 'approved'
-        )
+    const eligibleDrives = computed(() => {
+        const profile = studentProfile.value
+        if (!profile) return []
+
+        return driveStore.drives.filter(drive => {
+            if (drive.status !== 'approved') return false
+
+            let criteria
+            try {
+                criteria = JSON.parse(drive.eligibility_criteria)
+            } catch {
+                return false
+            }
+
+            const majors = Array.isArray(criteria[0]) ? criteria[0] : [criteria[0]]
+            const minCgpa = Number(criteria[1] ?? 0)
+            const minYear = Number(criteria[2] ?? 0)
+
+            return majors.includes(profile.degree)
+                && Number(profile.cgpa) >= minCgpa
+                && Number(profile.year) >= minYear
+            })
     })
     
     async function apply(id) {
@@ -33,13 +66,20 @@
 <template>
     <div class="container">
         <h2>Ongoing Drives</h2>
-        <div v-for="drive in approvedDrives" class="profile">
+        <div v-for="drive in eligibleDrives" :key="drive.id" class="profile">
             <h4>{{ drive.job_title }}</h4>
             <p><strong>Job Description:</strong> <br>           {{ drive.job_description }}</p>
             <p><strong>Company:</strong>           {{ drive.company_name }}</p>
 
             <p><strong>Eligibility Criteria:</strong></p>
-            <p>Major: <br>{{JSON.parse(drive.eligibility_criteria)[0]}}</p>
+            <p>Major: <br>
+                {{
+                    (() => {
+                        const criteria = JSON.parse(drive.eligibility_criteria)
+                        return Array.isArray(criteria[0]) ? criteria[0].join(', ') : criteria[0]
+                    })()
+                }}
+            </p>
             <p>Min. CGPA: <br>{{JSON.parse(drive.eligibility_criteria)[1]}}</p>
             <p>Min. Year of Graduation: <br>{{JSON.parse(drive.eligibility_criteria)[2]}}</p>
 

@@ -1,3 +1,12 @@
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'uploads/resumes'
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 import datetime
 
 from flask_restful import Resource
@@ -16,11 +25,13 @@ class SelfManageStudentProfile(Resource):
     def get(self):
         user  = current_user
         student = Student.query.filter_by(user_id=user.id).first()
+        department = Department.query.get(student.degree)
         result = {
             'name': student.name,
-            'degree': student.degree,
+            'degree': department.name if department else student.degree,
             'cgpa': student.cgpa,
             'year': student.year,
+            'resume_filename': student.resume_filename
         }
         return make_response(
             jsonify(result),
@@ -30,37 +41,67 @@ class SelfManageStudentProfile(Resource):
     @auth_token_required
     @roles_required("student")
     def post(self):
-        post_cred = request.get_json()
-        if not(post_cred['name'] or post_cred['degree'] or post_cred['cgpa'] or post_cred['year']):
-            result = {
-                'message': 'All fields required. Leave unwanted fields empty.'
-            }
-            return make_response(
-                jsonify(result),
-                403
-            )
-        
-        user  = current_user
+        user = current_user
         student = Student.query.filter_by(user_id=user.id).first()
         
-        if post_cred['name'] !='':
-            student.name = post_cred['name']
-        if post_cred['degree'] !='':    
-            student.degree = post_cred['degree']
-        if post_cred['cgpa'] !='':    
-            student.cgpa = post_cred['cgpa']
-        if post_cred['year'] !='':    
-            student.year = post_cred['year']      
-        db.session.commit()    
+        if request.form:
+            if request.form.get('name'):
+                student.name = request.form.get('name')
+            if request.form.get('degree'):
+                student.degree = request.form.get('degree')
+            if request.form.get('cgpa'):
+                student.cgpa = float(request.form.get('cgpa'))
+            if request.form.get('year'):
+                student.year = request.form.get('year')
+            
+            if 'resume' in request.files:
+                file = request.files['resume']
+                if file and file.filename and allowed_file(file.filename):
+                    filename = secure_filename(f"{student.id}_{user.username}_{file.filename}")
+                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                    file.save(os.path.join(UPLOAD_FOLDER, filename))
+                    student.resume_filename = filename
+                elif file and file.filename:
+                    result = {
+                        'message': 'Invalid file type. Only PDF, DOC, and DOCX files are allowed.'
+                    }
+                    return make_response(jsonify(result), 400)
+            
+            db.session.commit()
+            result = {
+                'message': 'Profile updated successfully.'
+            }
+            return make_response(jsonify(result), 200)
         
-        result = {
-            'message': 'Changes to profile made successfully.'
-        }
-        return make_response(
-            jsonify(result),
-            200
-        )
+        else:
+            result = {
+                'message': 'No data provided.'
+            }
+            return make_response(jsonify(result), 400)
+
+
+class DownloadResume(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        user = current_user
+        student = Student.query.filter_by(user_id=user.id).first()
         
+        if not student or not student.resume_filename:
+            result = {'message': 'No resume found.'}
+            return make_response(jsonify(result), 404)
+        
+        file_path = os.path.join(UPLOAD_FOLDER, student.resume_filename)
+        if not os.path.exists(file_path):
+            result = {'message': 'Resume file not found.'}
+            return make_response(jsonify(result), 404)
+        
+        from flask import send_file
+        return send_file(file_path, as_attachment=True)        
+
+
+
 class ApplyPlacementDrive(Resource):
     
     @auth_token_required
@@ -183,6 +224,34 @@ class ViewApplicationStatus(Resource):
             jsonify(appList),
             200
         )
+
+class SearchDrives(Resource):
+
+    @auth_token_required
+    @roles_required("student")
+    def post(self):
+        post_cred = request.get_json() or {}
+        search_term = (post_cred.get('search') or '').strip().lower()
+        
+        if not search_term:
+            return make_response(jsonify([]), 200)
+
+        drives = PlacementDrive.query.filter_by(status='approved').all()
+        results = []
+        
+        for drive in drives:
+            company = Company.query.get(drive.company_id)
+            if company and search_term in company.name.lower():
+                results.append({
+                    'id': drive.id,
+                    'company_id': company.id,
+                    'company_name': company.name,
+                    'job_title': drive.job_title,
+                    'label': f"{company.name} ({drive.job_title})"
+                })
+        
+        results.sort(key=lambda x: x['label'].lower())
+        return make_response(jsonify(results), 200)
 
 
 class ManageInterviewRequest(Resource):

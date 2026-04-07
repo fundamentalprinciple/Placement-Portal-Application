@@ -1,11 +1,13 @@
 <script setup>
     import { ref, onMounted } from 'vue'
+    import { useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
     import ScheduleInterview from '@/features/company/ScheduleInterview.vue'    
 
     const auth = useAuthStore()
     const driveStore = useDriveStore()
+    const router = useRouter()
 
     let new_status = ref("")
 
@@ -21,6 +23,11 @@
         await driveStore.updateApplicationStatus(id,new_status)
         await driveStore.fetchApplicationsByCompany()
     }
+
+    function viewProfile(student_id) {
+        router.push(`/company/student-profile/${student_id}`)
+    }
+
 </script>
 
 <template>
@@ -53,9 +60,11 @@
             </select><br>
  
             <button @click="update(app.id, new_status)">Set</button>
-            
+            <button @click="viewProfile(app.student_id)" style="margin-left: 10px; width:130px; height: 45px;" class="view-profile-btn">
+                View Profile
+            </button>
             <ScheduleInterview :application="app" />
-
+            
         </div>
     </div>
 </template>
@@ -112,4 +121,19 @@
         height: 40px;
         width: 150px;
     }
+
+     .view-profile-btn {
+        margin-top: 10px;
+        background-color: lightblue;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-family: "Montserrat", sans-serif;
+    }
+
+    .view-profile-btn:hover {
+        background-color: #9FBFF0;
+    }
+
 </style>

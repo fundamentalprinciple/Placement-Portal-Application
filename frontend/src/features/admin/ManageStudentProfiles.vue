@@ -1,9 +1,11 @@
 <script setup>
     import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
 
     const auth = useAuthStore()
-    
+    const router = useRouter()
+
     let studentList = ref([]);
 
     async function getStudentProfiles() {
@@ -35,20 +37,24 @@
         await getStudentProfiles();
     }
 
-    
+   function viewStudentProfile(id) {
+    router.push(`/admin/student-profile/${id}`)
+   }    
 
 </script>
 
 <template>
    <div class="container">
         <h2>Student Profiles</h2>
-        <div v-for="student in studentList" class="profile">
+        <div v-for="student in studentList" :key="student.id" class="profile">
             <h4>{{ student.name }}</h4>
             <p><strong>Major:</strong>           {{ student.degree }}</p>
             <p><strong>CGPA:</strong>            {{ student.cgpa }}</p>
             <p><strong>Year:</strong>            {{ student.year }}</p>
             <p v-if="student.available==true"><strong>Available:</strong>       Yes</p>
             <p v-if="student.available==false"><strong>Available:</strong>       No</p>
+
+            <button @click="viewStudentProfile(student.id)">View Profile</button>
 
             <button @click="changeAccountStatus(student.id,'deactivate')" v-if="student.account_status==true" >Deactivate Account</button>
             <button @click="changeAccountStatus(student.id,'activate')" v-if="student.account_status==false">Activate Account</button>
@@ -97,7 +103,7 @@
         border: none;
         border-radius: 10px;
         padding: 10px;
-        margin-left: 40px;
+        margin-top: 10px;
     }   
 
     button:hover {

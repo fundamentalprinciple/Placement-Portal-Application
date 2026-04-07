@@ -1,6 +1,7 @@
 <script setup>
     import { useRouter } from 'vue-router'
     import Hello from '@/components/Hello.vue'
+    import StudentDrivesSearch from '@/features/student/StudentDrivesSearch.vue'
     import ApplyDrive from '@/features/student/ApplyDrive.vue'
     import AppliedDrives from '@/features/student/AppliedDrives.vue'    
     import StudentInterviews from '@/features/student/StudentInterviews.vue'
@@ -10,7 +11,8 @@
 
 <template>
     <Hello />
-    <div class="profile-btn-container">
+    <div class="button-bar">
+        <StudentDrivesSearch />
         <button @click="router.push('/student/profile')" class="profile-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -27,9 +29,13 @@
 </template>
 
 <style scoped>
-   .profile-btn-container {
+    .button-bar {
         text-align: center;
         margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
     }
     
     .profile-btn {
@@ -42,6 +48,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        box-shadow: 5px 5px 5px rgba(173, 188, 255, 0.35);
     }
     
     .profile-btn:hover {
@@ -52,6 +59,7 @@
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-    } 
-       
-</style>
+        justify-content: center;
+        gap: 20px;
+    }
+</style> 

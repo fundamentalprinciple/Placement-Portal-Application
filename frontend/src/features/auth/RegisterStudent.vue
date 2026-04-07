@@ -99,8 +99,17 @@
             
             <div class="group">
                 <label for="cgpa">CGPA</label><br>
-                <input style="width: 300px;" v-model="cgpa" id="cgpa" name="cgpa" type="range" min="0" max="10" step="0.01" oninput="valueDisplay.textContent = this.value"/>
-                <div style="font-size: x-large; color: white;" id="valueDisplay">5</div>
+                <input
+                    style="width: 300px;"
+                    v-model.number="cgpa"
+                    id="cgpa"
+                    name="cgpa"
+                    type="number"
+                    min="0.00"
+                    max="10.00"
+                    step="0.01"
+                    required
+                />
             </div>
 
             <div class="group">

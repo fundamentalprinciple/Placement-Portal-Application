@@ -13,6 +13,7 @@
     })
 
     async function delete_drive(id) {
+        console.log(id);
         await driveStore.deleteDrive(id)
         await driveStore.fetchDrivesByCompany()
     }
@@ -29,7 +30,14 @@
             <p><strong>Job Description:</strong> <br>           {{ drive.job_description }}</p>
 
             <p><strong>Eligibility Criteria:</strong></p>
-            <p>Major: <br>{{JSON.parse(drive.eligibility_criteria)[0]}}</p>
+            <p>
+                Major: <br>
+                <span 
+                v-for="item in JSON.parse(drive.eligibility_criteria)[0]" 
+                >
+                {{ item }}, 
+                </span>
+            </p>
             <p>Min. CGPA: <br>{{JSON.parse(drive.eligibility_criteria)[1]}}</p>
             <p>Min. Year of Graduation: <br>{{JSON.parse(drive.eligibility_criteria)[2]}}</p>
 

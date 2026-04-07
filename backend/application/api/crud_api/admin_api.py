@@ -79,31 +79,6 @@ class ManageStudentProfiles(Resource):
         )
 
 
-class GetStudentProfile(Resource):
-
-    @auth_token_required
-    @roles_required("admin")
-    def get(self, id):
-        student = Student.query.get(id)
-        if not student:
-            return make_response(jsonify({'message': 'Student not found.'}), 404)
-
-        user = User.query.get(student.user_id)
-        department = Department.query.get(student.degree)
-
-        result = {
-            'id': student.id,
-            'user_id': student.user_id,
-            'name': student.name,
-            'gender': student.gender,
-            'degree': department.name if department else student.degree,
-            'cgpa': student.cgpa,
-            'year': student.year,
-            'available': student.available,
-            'account_status': user.active if user else None
-        }
-        return make_response(jsonify(result), 200)
-
 
 class ManageCompanyProfiles(Resource):
 

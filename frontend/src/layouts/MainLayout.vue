@@ -13,6 +13,7 @@
     import AdminCompanyProfile from '@/features/admin/AdminCompanyProfile.vue'
     import CompanyProfile from '@/features/company/CompanyProfile.vue'
     import StudentProfile from '@/features/student/StudentProfile.vue'
+    import CompanyStudentProfile from '@/features/company/CompanyStudentProfile.vue'
 
     const route = useRoute()   
     const auth = useAuthStore()
@@ -25,6 +26,7 @@
     <AdminCompanyProfile v-else-if="auth.isAuthenticated && auth.role == 'admin' && route.path.startsWith('/admin/company-profile')" />    
     <CompanyProfile v-else-if="auth.isAuthenticated && auth.role=='company' && route.path=='/company/profile'" />
     <StudentProfile v-else-if="auth.isAuthenticated && auth.role=='student' && route.path=='/student/profile'" />
+    <CompanyStudentProfile v-else-if="auth.isAuthenticated && auth.role=='company' && route.path.startsWith('/company/student-profile')" />
     <AdminLayout v-else-if="auth.isAuthenticated && auth.role=='admin'" />
     <CompanyLayout v-else-if="auth.isAuthenticated && auth.role=='company'" />
     <StudentLayout v-else-if="auth.isAuthenticated && auth.role=='student'"  />

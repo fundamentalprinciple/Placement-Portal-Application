@@ -3,6 +3,8 @@
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
 
+    import DegreeMultiSelect from '@/components/DegreeMultiSelect.vue'
+
     const auth = useAuthStore()
     const driveStore = useDriveStore()
 
@@ -10,7 +12,7 @@
     const job_description = ref("")
     const deadline = ref("")
 
-    const degree = ref("") 
+    const degree = ref([]) 
     const cgpa = ref(5)
     const year = ref("")
 
@@ -18,7 +20,7 @@
         await driveStore.createDrive({
             job_title: job_title.value,
             job_description: job_description.value,
-            eligibility_criteria: `["${degree.value}",${cgpa.value},${year.value}]`,
+            eligibility_criteria: JSON.stringify([degree.value, parseFloat(cgpa.value), year.value]),
             deadline: deadline.value,
         })
         document.getElementById('form').reset()
@@ -50,28 +52,24 @@
 
             <div class="criteria">
                 <p>Eligbility Criteria</p><br>
+                
+                <label for="degree">Majors</label><br>
+                <DegreeMultiSelect v-model="degree" />
 
-                <label for="degree">Major</label><br>
-                <select style="width:250px" v-model="degree" id="degree" name="degree" required >
-                    <option value="Computer Engineering">Computer Engineering</option>
-                    <option value="Computer Science Engineering">Computer Science Engineering</option>
-                    <option value="Electrical Engineering">Electrical Engineering</option>
-                    <option value="Mechanical Engineering">Mechanical Engineering</option>
-                    <option value="Civil Engineering">Civil Engineering</option>
-                    <option value="Chemical Engineering">Chemical Engineering</option>
-                    <option value="Aerospace Engineering">Aerospace Engineering</option>
-                    <option value="Automotive Engineering">Automotive Engineering</option>
-                    <option value="Robotics Engineering">Robotics Engineering</option>
-                    <option value="Nanotechnology Engineering">Nanotechnology Engineering</option>
-                    <option value="Data Science and Applications">Data Science and Applications</option>
-                    <option value="Electronic Systems">Electronic Systems</option>
-                    <option value="Management and Data Science">Management and Data Science</option>
-                </select>
                 <br />
                 <br />
                 <label for="cgpa">Minimum CGPA</label><br>
-                <input style="width: 300px;" v-model="cgpa" id="cgpa" name="cgpa" type="range" min="0" max="10" step="0.01" oninput="valueDisplay.textContent = this.value"/>
-                <div style="font-size: x-large;" id="valueDisplay">5</div>
+                <input
+                    style="width: 300px;"
+                    v-model.number="cgpa"
+                    id="cgpa"
+                    name="cgpa"
+                    type="number"
+                    min="0.00"
+                    max="10.00"
+                    step="0.01"
+                    required
+                />
                 <br />
                 <br />
                 <label for="year">Minimum Year of graduation</label>
@@ -97,7 +95,6 @@
         border-radius: 20px;
         padding: 30px;
         width: 550px;
-        height: 1100px;
         background-color: #ECEBFA;
         box-shadow: 10px 10px 5px lightblue;
     }
@@ -135,7 +132,7 @@
         border-radius: 10px;
         background-color: lightblue;
         font-weight: bold;
-        height: 40px;
+        height: 50px;
         width: 100px;
         margin: auto;
         margin-bottom: 20px;
