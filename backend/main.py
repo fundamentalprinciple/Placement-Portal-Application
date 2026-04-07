@@ -62,7 +62,6 @@ api.add_resource(ViewPlacementHistory, '/api/view-placement-history')
 api.add_resource(DownloadStudentResume, '/api/student-resume/<int:student_id>')
 api.add_resource(GetStudentProfile, '/api/student-profile/<int:id>')
 
-
 #Admin access
 from application.api.crud_api.admin_api import *
 api.add_resource(ManageStudentProfiles, '/api/manage-student-profiles') 
@@ -71,16 +70,17 @@ api.add_resource(ManageDrives, '/api/manage-drives')
 api.add_resource(ViewPlacementStatistics, '/api/view-placement-statistics')
 api.add_resource(SearchUsers, '/api/search-user')
 api.add_resource(GetCompanyProfile, '/api/company-profile/<int:id>')
-
+api.add_resource(GetPlacementStatistics, '/api/get-placement-statistics')
 
 #Company access
 from application.api.crud_api.company_api import *
 api.add_resource(CreateDrive, '/api/create-drive')
 api.add_resource(ManageApplications, '/api/manage-applications')
 api.add_resource(ScheduleInterview, '/api/schedule-interview')
-api.add_resource(Recruit, '/api/recruit')
 api.add_resource(CompanyProfile, '/api/company-profile')
 api.add_resource(SearchApplications, '/api/search-applications')
+api.add_resource(Recruit, '/api/recruit')
+
 
 #Student access
 from application.api.crud_api.student_api import *
@@ -90,6 +90,9 @@ api.add_resource(ViewApplicationStatus, '/api/view-application-status')
 api.add_resource(ManageInterviewRequest, '/api/manage-interview-request')
 api.add_resource(SearchDrives, '/api/search-drives')
 api.add_resource(DownloadResume, '/api/download-resume')
+api.add_resource(ManageRecruitmentRequest, '/api/manage-recruitment-request')
+api.add_resource(GetPlacementHistory, '/api/get-placement-history')
+
 
 if __name__ == '__main__':
     init_db(app) 

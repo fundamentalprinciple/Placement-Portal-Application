@@ -30,14 +30,15 @@
             <p><strong>Job Description:</strong> <br>           {{ drive.job_description }}</p>
 
             <p><strong>Eligibility Criteria:</strong></p>
-            <p>
-                Major: <br>
-                <span 
-                v-for="item in JSON.parse(drive.eligibility_criteria)[0]" 
-                >
-                {{ item }}, 
-                </span>
+            <p>Major: <br>
+                {{
+                    (() => {
+                        const criteria = JSON.parse(drive.eligibility_criteria)
+                        return Array.isArray(criteria[0]) ? criteria[0].join(', ') : criteria[0]
+                    })()
+                }}
             </p>
+ 
             <p>Min. CGPA: <br>{{JSON.parse(drive.eligibility_criteria)[1]}}</p>
             <p>Min. Year of Graduation: <br>{{JSON.parse(drive.eligibility_criteria)[2]}}</p>
 

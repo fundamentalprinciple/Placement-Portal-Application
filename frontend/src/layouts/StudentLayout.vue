@@ -7,6 +7,11 @@
     import StudentInterviews from '@/features/student/StudentInterviews.vue'
 
     const router = useRouter()
+
+    function viewHistory() {
+        router.push('/student/history')
+    }
+
 </script>
 
 <template>
@@ -20,10 +25,11 @@
             </svg>
             Profile
         </button>
+        <button class="profile-btn" @click="viewHistory">History</button>
     </div>
     <div class="controls">
         <ApplyDrive />
-        <AppliedDrives />
+        <AppliedDrives />        
         <StudentInterviews />
     </div>
 </template>

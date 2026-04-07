@@ -313,3 +313,121 @@ class ManageInterviewRequest(Resource):
 
         result = {'message': "Invalid value for 'accept'; use true or false."}
         return make_response(jsonify(result), 400) 
+
+
+class ManageRecruitmentRequest(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        student = Student.query.filter_by(user_id=current_user.id).first()
+        requests = RecruitmentRequest.query.filter_by(student_id=student.id).all()
+        
+        result = []
+        for req in requests:
+            drive = PlacementDrive.query.get(req.drive_id)
+            company = Company.query.get(req.company_id)
+            result.append({
+                'id': req.id,
+                'drive_id': req.drive_id,
+                'company_name': company.name,
+                'job_title': drive.job_title,
+                'status': req.status,
+                'created_date': req.created_date
+            })
+        
+        return make_response(jsonify(result), 200)
+    
+    @auth_token_required
+    @roles_required("student")
+    def post(self):
+        post_cred = request.get_json()
+        request_id = post_cred.get('request_id')
+        action = post_cred.get('action')  # 'confirm' or 'cancel'
+        
+        if not request_id or action not in ['confirm', 'cancel']:
+            return make_response(jsonify({'message': 'request_id and action (confirm/cancel) are required'}), 400)
+        
+        recruitment_request = RecruitmentRequest.query.get(request_id)
+        if not recruitment_request:
+            return make_response(jsonify({'message': 'Request not found'}), 404)
+        
+        student = Student.query.filter_by(user_id=current_user.id).first()
+        if recruitment_request.student_id != student.id:
+            return make_response(jsonify({'message': 'Not authorized'}), 403)
+        
+        if action == 'confirm':
+            recruitment_request.status = 'confirmed'
+            recruitment_request.response_date = datetime.datetime.now()
+            
+            student.available = False
+            
+            recruitment = Recruitment(
+                drive_id=recruitment_request.drive_id,
+                student_id=student.id,
+                company_id=recruitment_request.company_id, 
+                recruitment_date=datetime.datetime.now(),
+                annual_salary=0  
+            )
+            db.session.add(recruitment)
+        
+        elif action == 'cancel':
+            recruitment_request.status = 'cancelled'
+            recruitment_request.response_date = datetime.datetime.now()
+        
+        db.session.commit()
+        
+        return make_response(jsonify({'message': f'Recruitment request {action}ed'}), 200)
+
+
+class GetPlacementHistory(Resource):
+    
+    @auth_token_required
+    @roles_required("student")
+    def get(self):
+        student = Student.query.filter_by(user_id=current_user.id).first()
+        
+        history = []
+        
+        applications = Application.query.filter_by(student_id=student.id).all()
+        for app in applications:
+            drive = PlacementDrive.query.get(app.drive_id)
+            company = Company.query.get(drive.company_id)
+            history.append({
+                'type': 'application',
+                'status': app.status,
+                'date': app.application_date,
+                'company_name': company.name,
+                'job_title': drive.job_title,
+                'description': f'Applied for {drive.job_title} at {company.name}'
+            })
+        
+        recruitment_requests = RecruitmentRequest.query.filter_by(student_id=student.id).all()
+        for req in recruitment_requests:
+            drive = PlacementDrive.query.get(req.drive_id)
+            company = Company.query.get(req.company_id)
+            history.append({
+                'type': 'recruitment',
+                'status': req.status,
+                'date': req.created_date,
+                'company_name': company.name,
+                'job_title': drive.job_title,
+                'description': f'Recruitment request from {company.name} for {drive.job_title}'
+            })
+        
+        recruitments = Recruitment.query.filter_by(student_id=student.id).all()
+        for rec in recruitments:
+            drive = PlacementDrive.query.get(rec.drive_id)
+            company = Company.query.get(drive.company_id)
+            history.append({
+                'type': 'placement',
+                'status': 'confirmed',
+                'date': rec.recruitment_date,
+                'company_name': company.name,
+                'job_title': drive.job_title,
+                'description': f'Placed at {company.name} for {drive.job_title}'
+            })
+        
+        history.sort(key=lambda x: x['date'], reverse=True)
+        
+        return make_response(jsonify(history), 200)

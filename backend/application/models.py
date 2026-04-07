@@ -129,3 +129,23 @@ class Recruitment(db.Model):
     recruitment_date = db.Column(db.Date, nullable=False)
     annual_salary = db.Column(db.Numeric(10,2), nullable=False) #In rupees, like 2200000.00
 
+
+class RecruitmentRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    application_id = db.Column(db.Integer, db.ForeignKey('application.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
+    status = db.Column(Enum('pending', 'confirmed', 'cancelled'), nullable=False, default='pending')
+    created_date = db.Column(db.Date, nullable=False)
+    response_date = db.Column(db.Date, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint('student_id', 'drive_id', name='unique_student_drive_recruitment'),
+    )
+
+    application = db.relationship("Application", backref="recruitment_requests")
+    company = db.relationship("Company", backref="recruitment_requests")
+    student = db.relationship("Student", backref="recruitment_requests")
+    drive = db.relationship("PlacementDrive", backref="recruitment_requests")
+

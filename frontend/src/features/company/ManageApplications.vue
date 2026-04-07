@@ -28,6 +28,26 @@
         router.push(`/company/student-profile/${student_id}`)
     }
 
+    async function recruit(application_id) {
+        const response = await fetch("http://localhost:3000/api/recruit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authentication-Token": auth.token
+            },
+            body: JSON.stringify({ application_id })
+        })
+    
+        if (response.ok) {
+            alert("Recruitment request sent to student")
+            await driveStore.fetchApplicationsByCompany()
+        } else {
+            const error = await response.json()
+            alert(`Error: ${error.message}`)
+        }
+    }
+
+
 </script>
 
 <template>
@@ -64,6 +84,7 @@
                 View Profile
             </button>
             <ScheduleInterview :application="app" />
+            <button @click="recruit(app.id)" style="background-color: #4CAF50; color: white; margin-top: 10px; width: 100px;">Recruit</button>
             
         </div>
     </div>

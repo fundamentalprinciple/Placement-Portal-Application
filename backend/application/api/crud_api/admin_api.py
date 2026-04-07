@@ -3,6 +3,7 @@ import datetime
 from flask_restful import Resource
 from flask import request, jsonify, make_response
 from flask_security import current_user, utils, auth_token_required, roles_required
+from sqlalchemy import distinct
 
 from ...user_datastore import user_datastore
 from ...database import db
@@ -372,3 +373,59 @@ class ViewPlacementStatistics(Resource):
             jsonify(result),
             200
         ) 
+
+
+class GetPlacementStatistics(Resource):
+    
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+        total_placements = Recruitment.query.count()
+        
+        placements_by_dept = db.session.query(
+            Department.name,
+            db.func.count(distinct(Recruitment.id)).label('count')
+        ).select_from(Recruitment)\
+         .join(Student, Recruitment.student_id == Student.id)\
+         .join(Department, Department.name == Student.degree)\
+         .group_by(Department.name).all()
+    
+        print(placements_by_dept) 
+
+        placements_by_date = db.session.query(
+            Recruitment.recruitment_date,
+            db.func.count(Recruitment.id).label('count')
+        ).group_by(Recruitment.recruitment_date)\
+         .order_by(Recruitment.recruitment_date).all()
+        
+        top_companies = db.session.query(
+            Company.name,
+            db.func.count(Recruitment.id).label('count')
+        ).join(PlacementDrive, Company.id == PlacementDrive.company_id)\
+         .join(Recruitment, PlacementDrive.id == Recruitment.drive_id)\
+         .group_by(Company.name)\
+         .order_by(db.func.count(Recruitment.id).desc())\
+         .limit(5).all()
+        
+        pending_requests = RecruitmentRequest.query.filter_by(status='pending').count()
+        
+        recruited_students = Student.query.filter_by(available=False).count()
+        
+        result = {
+            'total_placements': total_placements,
+            'placements_by_department': [
+                {'department': item[0], 'count': item[1]} for item in placements_by_dept
+            ],
+            'placements_by_date': [
+                {'date': str(item[0]), 'count': item[1]} for item in placements_by_date
+            ],
+            'top_companies': [
+                {'company': item[0], 'count': item[1]} for item in top_companies
+            ],
+            'pending_recruitment_requests': pending_requests,
+            'recruited_students': recruited_students,
+            'total_students': Student.query.count(),
+            'placement_rate': f"{(recruited_students / Student.query.count() * 100):.2f}%" if Student.query.count() > 0 else "0%"
+        }
+        
+        return make_response(jsonify(result), 200)

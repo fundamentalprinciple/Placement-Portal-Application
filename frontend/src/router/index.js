@@ -16,6 +16,7 @@ const router = createRouter({
     { path: '/company/profile', component: MainLayout },
     { path: '/student/profile', component: MainLayout },
     { path: '/company/student-profile/:id', component: MainLayout },
+    { path: '/student/history', component: MainLayout },
     ]
 })
 

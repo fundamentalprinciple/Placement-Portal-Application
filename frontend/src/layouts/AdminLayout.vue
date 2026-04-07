@@ -4,7 +4,7 @@
     import ManageStudentProfiles from '@/features/admin/ManageStudentProfiles.vue'
     import ManageCompanyProfiles from '@/features/admin/ManageCompanyProfiles.vue'
     import ManageDrives from '@/features/admin/ManageDrives.vue'
-
+    import ViewPlacementStatistics from '@/features/admin/ViewPlacementStatistics.vue'
 </script>
 
 <template>
@@ -15,9 +15,7 @@
         <ManageStudentProfiles />
         <ManageCompanyProfiles />
         <ManageDrives />
-        <!--
         <ViewPlacementStatistics />
-        -->
     </div>
 
 </template>
