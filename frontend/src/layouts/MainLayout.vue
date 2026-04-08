@@ -9,6 +9,8 @@
     import StudentLayout from '@/layouts/StudentLayout.vue'
     import NotAuthenticated from '@/layouts/NotAuthenticated.vue'
 
+    import About from '@/components/About.vue'
+
     import AdminStudentProfile from '@/features/admin/AdminStudentProfile.vue'
     import AdminCompanyProfile from '@/features/admin/AdminCompanyProfile.vue'
     import CompanyProfile from '@/features/company/CompanyProfile.vue'
@@ -23,6 +25,7 @@
 
 <template>
     <AuthLayout v-if="['/login', '/register-student', '/register-company', '/logout'].includes(route.path)"/>
+    <About v-else-if="route.path === '/about'" />
     <AdminStudentProfile v-else-if="auth.isAuthenticated && auth.role == 'admin' && route.path.startsWith('/admin/student-profile')" />
     <AdminCompanyProfile v-else-if="auth.isAuthenticated && auth.role == 'admin' && route.path.startsWith('/admin/company-profile')" />    
     <CompanyProfile v-else-if="auth.isAuthenticated && auth.role=='company' && route.path=='/company/profile'" />
