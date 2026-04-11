@@ -13,12 +13,19 @@ from application.database import db
 from application.user_datastore import user_datastore
 from application.models import seed_departments
 
+from celery_app import celery
+from flask_mail import Mail
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
     db.init_app(app)
     Security(app, user_datastore)
+
+    mail = Mail()
+    mail.init_app(app)
+    celery.conf.update(app.config)
 
     api = Api(app)
     

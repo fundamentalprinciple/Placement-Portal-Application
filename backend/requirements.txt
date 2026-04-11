@@ -50,3 +50,6 @@ Werkzeug==3.1.5
 WTForms==3.2.1
 zope.event==6.1
 zope.interface==8.2
+celery==5.3.4
+redis==5.0.1
+Flask-Mail==0.9.1
