@@ -6,7 +6,7 @@
         The Placement Portal Application is a comprehensive platform designed to facilitate the placement process for students, companies, and administrators at educational institutions. It streamlines job applications, interview scheduling, and profile management to ensure a smooth recruitment experience.
       </p>
       <p>
-        This application was developed by Prince Dixit as part of the IIT Madras Modern Application Development-2 project.
+        This application was developed by Prince Dixit.
       </p>
     </div>
   </div>
