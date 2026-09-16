@@ -1,4 +1,6 @@
 src/structure.txt
+.env
+.env.*
 
 # Logs
 logs
