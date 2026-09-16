@@ -32,7 +32,8 @@ def create_app():
     app.app_context().push()
     return app, api
 app, api = create_app()
-CORS(app) 
+frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+CORS(app, resources={r'/api/*': {'origins': frontend_url}})
 
 def init_db(app):
     with app.app_context():

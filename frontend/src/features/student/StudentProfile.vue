@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
@@ -24,7 +25,7 @@
 
     async function fetchProfile() {
         try {
-            const response = await fetch('http://localhost:3000/api/self-manage-student-profile', {
+            const response = await fetch(`${API_BASE_URL}/api/self-manage-student-profile`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +65,7 @@
                 formData.append('resume', resumeFile.value)
             }
 
-            const response = await fetch('http://localhost:3000/api/self-manage-student-profile', {
+            const response = await fetch(`${API_BASE_URL}/api/self-manage-student-profile`, {
                 method: 'POST',
                 headers: {
                     'Authentication-Token': auth.token
@@ -105,7 +106,7 @@
 
     async function downloadResume() {
         try {
-            const response = await fetch('http://localhost:3000/api/download-resume', {
+            const response = await fetch(`${API_BASE_URL}/api/download-resume`, {
                 method: 'GET',
                 headers: {
                     'Authentication-Token': auth.token

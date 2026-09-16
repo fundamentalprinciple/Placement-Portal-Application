@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted, computed } from 'vue'
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
@@ -23,7 +24,7 @@
     }
 
     async function getRecruitmentRequests() {
-        const response = await fetch("http://localhost:3000/api/manage-recruitment-request", {
+        const response = await fetch(`${API_BASE_URL}/api/manage-recruitment-request`, {
             method: "GET",
             headers: {
                 "Authentication-Token": auth.token
@@ -37,7 +38,7 @@
     }
 
     async function respondRecruitment(request_id, action) {
-        const response = await fetch("http://localhost:3000/api/manage-recruitment-request", {
+        const response = await fetch(`${API_BASE_URL}/api/manage-recruitment-request`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

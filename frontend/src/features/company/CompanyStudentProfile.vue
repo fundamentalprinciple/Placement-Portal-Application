@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
@@ -11,7 +12,7 @@
 
     async function loadProfile() {
         const id = route.params.id
-        const response = await fetch(`http://localhost:3000/api/student-profile/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/student-profile/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,7 +28,7 @@
 
     async function downloadResume() {
         if (!profile.value || !profile.value.resume_filename) return
-        const response = await fetch(`http://localhost:3000/api/student-resume/${profile.value.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/student-resume/${profile.value.id}`, {
             method: 'GET',
             headers: {
                 'Authentication-Token': auth.token

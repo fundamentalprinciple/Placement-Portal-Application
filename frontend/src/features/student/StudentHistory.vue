@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
@@ -9,7 +10,7 @@
     const history = ref([])
 
     async function fetchHistory() {
-        const response = await fetch("http://localhost:3000/api/get-placement-history", {
+        const response = await fetch(`${API_BASE_URL}/api/get-placement-history`, {
             method: "GET",
             headers: {
                 "Authentication-Token": auth.token

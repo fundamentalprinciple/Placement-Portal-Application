@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
+import { API_BASE_URL } from '@/config/api'
 
 export const useDriveStore = defineStore('drive', {
   state: () => ({
@@ -15,7 +16,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchCompanyInterviews() {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+        const response = await fetch(`${API_BASE_URL}/api/schedule-interview`, {
           method: 'GET',
           headers: {
             'Authentication-Token': auth.token
@@ -31,7 +32,7 @@ export const useDriveStore = defineStore('drive', {
     async cancelCompanyInterview(interview_id) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+        const response = await fetch(`${API_BASE_URL}/api/schedule-interview`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -48,7 +49,7 @@ export const useDriveStore = defineStore('drive', {
     async completeCompanyInterview(interview_id) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/schedule-interview', {
+        const response = await fetch(`${API_BASE_URL}/api/schedule-interview`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -65,7 +66,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchStudentInterviews() {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/manage-interview-request', {
+        const response = await fetch(`${API_BASE_URL}/api/manage-interview-request`, {
           method: 'GET',
           headers: {
             'Authentication-Token': auth.token
@@ -81,7 +82,7 @@ export const useDriveStore = defineStore('drive', {
     async respondInterview(interview_id, accept) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/manage-interview-request', {
+        const response = await fetch(`${API_BASE_URL}/api/manage-interview-request`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchDrivesByCompany() {
       const auth = useAuthStore()
       try {
-        const response = await fetch("http://localhost:3000/api/create-drive", {
+        const response = await fetch(`${API_BASE_URL}/api/create-drive`, {
           method: 'GET',
           headers: {
             'Authentication-Token': auth.token
@@ -114,7 +115,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchAllDrives() {
       const auth = useAuthStore()
       try {
-        const response = await fetch("http://localhost:3000/api/manage-drives", {
+        const response = await fetch(`${API_BASE_URL}/api/manage-drives`, {
           method: 'GET',
           headers: {
             'Authentication-Token': auth.token
@@ -130,7 +131,7 @@ export const useDriveStore = defineStore('drive', {
     async createDrive(driveData) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/create-drive', {
+        const response = await fetch(`${API_BASE_URL}/api/create-drive`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -147,7 +148,7 @@ export const useDriveStore = defineStore('drive', {
     async changeDriveStatus(driveId, newStatus) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/manage-drives', {
+        const response = await fetch(`${API_BASE_URL}/api/manage-drives`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -168,7 +169,7 @@ export const useDriveStore = defineStore('drive', {
       console.log(parseInt(driveId));  
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/create-drive', {
+        const response = await fetch(`${API_BASE_URL}/api/create-drive`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -187,7 +188,7 @@ export const useDriveStore = defineStore('drive', {
     async applyDrive(driveId) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/apply-placement-drive', {
+        const response = await fetch(`${API_BASE_URL}/api/apply-placement-drive`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -207,7 +208,7 @@ export const useDriveStore = defineStore('drive', {
     async deleteApplication(app_id) {
         const auth = useAuthStore()
         try {
-            const response = await fetch('http://localhost:3000/api/apply-placement-drive', {
+            const response = await fetch(`${API_BASE_URL}/api/apply-placement-drive`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -226,7 +227,7 @@ export const useDriveStore = defineStore('drive', {
     async fetchAppliedDrives() {
       const auth = useAuthStore()
       try {
-        const response = await fetch("http://localhost:3000/api/apply-placement-drive", {
+        const response = await fetch(`${API_BASE_URL}/api/apply-placement-drive`, {
           method: 'GET',
           headers: {
             'Authentication-Token': auth.token
@@ -243,7 +244,7 @@ export const useDriveStore = defineStore('drive', {
         const auth = useAuthStore()
         try {
             this.loading = true;
-            const response = await fetch("http://localhost:3000/api/manage-applications", {
+            const response = await fetch(`${API_BASE_URL}/api/manage-applications`, {
                 method: 'GET',
                 headers: {
                     'Authentication-Token': auth.token
@@ -260,7 +261,7 @@ export const useDriveStore = defineStore('drive', {
     async updateApplicationStatus(app_id,new_status) {
       const auth = useAuthStore()
       try {
-        const response = await fetch('http://localhost:3000/api/manage-applications', {
+        const response = await fetch(`${API_BASE_URL}/api/manage-applications`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

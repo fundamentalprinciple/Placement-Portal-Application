@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { API_BASE_URL } from '@/config/api'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -14,7 +15,7 @@ export const useAuthStore = defineStore('auth', {
       this.username = localStorage.getItem('username') || ''
       if (this.username && this.token) {
         try {
-          const response = await fetch('http://localhost:3000/api/authenticate', {
+          const response = await fetch(`${API_BASE_URL}/api/authenticate`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

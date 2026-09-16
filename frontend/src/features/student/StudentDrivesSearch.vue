@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref } from 'vue'
     import { useAuthStore } from '@/stores/auth'
 
@@ -15,7 +16,7 @@
             return
         }
 
-        const response = await fetch('http://localhost:3000/api/search-drives', {
+        const response = await fetch(`${API_BASE_URL}/api/search-drives`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

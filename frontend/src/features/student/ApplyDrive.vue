@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted, computed } from 'vue'
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
@@ -11,7 +12,7 @@
     const studentProfile = ref(null)
 
     async function getStudentProfile() {
-    const response = await fetch("http://localhost:3000/api/self-manage-student-profile", {
+    const response = await fetch(`${API_BASE_URL}/api/self-manage-student-profile`, {
         method: 'GET',
         headers: {
             'Authentication-Token': auth.token

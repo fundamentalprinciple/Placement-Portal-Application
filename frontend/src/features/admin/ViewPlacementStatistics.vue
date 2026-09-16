@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref, onMounted } from 'vue'
     import { useAuthStore } from '@/stores/auth'
 
@@ -16,7 +17,7 @@
     })
 
     async function fetchStatistics() {
-        const response = await fetch("http://localhost:3000/api/get-placement-statistics", {
+        const response = await fetch(`${API_BASE_URL}/api/get-placement-statistics`, {
             method: "GET",
             headers: {
                 "Authentication-Token": auth.token

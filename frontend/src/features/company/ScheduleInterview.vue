@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref } from 'vue'
     import { useAuthStore } from '@/stores/auth'
     import { useDriveStore } from '@/stores/drives'
@@ -35,7 +36,7 @@
 
         submitting.value = true
         try {
-            const response = await fetch('http://localhost:3000/api/schedule-interview', {
+            const response = await fetch(`${API_BASE_URL}/api/schedule-interview`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

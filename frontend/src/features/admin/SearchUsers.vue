@@ -1,4 +1,5 @@
 <script setup>
+import { API_BASE_URL } from '@/config/api'
     import { ref } from 'vue'
     import { useRouter } from 'vue-router'
     import { useAuthStore } from '@/stores/auth'
@@ -17,7 +18,7 @@
             return
         }
 
-        const response = await fetch('http://localhost:3000/api/search-user', {
+        const response = await fetch(`${API_BASE_URL}/api/search-user`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
