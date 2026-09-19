@@ -2,3 +2,5 @@
 .venv
 db_directory/*
 fetchTests.js
+__pycache__/
+*.py[cod]
